@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
 // mock
 import account from '../../../_mock/account';
 // hooks
@@ -29,7 +29,6 @@ export default function Nav({ openNav, onCloseNav }) {
     const { pathname } = useLocation();
 
     const isDesktop = useResponsive('up', 'lg');
-
 
     useEffect(() => {
         if (openNav) {
@@ -72,33 +71,6 @@ export default function Nav({ openNav, onCloseNav }) {
             </Box>
 
             <NavSection data={navConfig} />
-
-            <Box sx={{ flexGrow: 1 }} />
-
-            <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-                <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-                    <Box
-                        component="img"
-                        src="/assets/illustrations/illustration_docs.svg"
-                        sx={{ width: 100, position: 'absolute', top: -50 }}
-                    />
-
-                    <Box sx={{ textAlign: 'center' }}>
-                        <Typography gutterBottom variant="h6">
-                            Bonjour, Minimal UI
-                        </Typography>
-
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            Besoin d'aide?
-                            Consultez notre documentation.
-                        </Typography>
-                    </Box>
-
-                    <Button href="https://material-ui.com/store/items/minimal-dashboard/" target="_blank" variant="contained">
-                        Documentation
-                    </Button>
-                </Stack>
-            </Box>
         </Scrollbar>
     );
 

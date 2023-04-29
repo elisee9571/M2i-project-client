@@ -1,31 +1,49 @@
-// component
-import SvgColor from '../../../components/svg-color/SvgColor';
-
-// ----------------------------------------------------------------------
-
-const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
+import {
+    Assessment as AssessmentIcon,
+    AccountBox as AccountBoxIcon,
+    LocalOffer as LocalOfferIcon,
+    LocalMall as LocalMallIcon,
+    RateReview as RateReviewIcon,
+    Receipt as ReceiptIcon,
+    Payment as PaymentIcon
+} from '@mui/icons-material';
 
 const navConfig = [
     {
         title: 'dashboard',
         path: '/dashboard/app',
-        icon: icon('ic_analytics'),
+        icon: <AssessmentIcon />,
     },
     {
-        title: 'users',
+        title: 'utilisateur',
         path: '/dashboard/user/list',
-        icon: icon('ic_user'),
+        icon: <AccountBoxIcon />,
     },
     {
-        title: 'login',
-        path: '/login',
-        icon: icon('ic_lock'),
+        title: 'catégorie',
+        path: '/dashboard/category/list',
+        icon: <LocalOfferIcon />,
     },
     {
-        title: 'Not found',
-        path: '/404',
-        icon: icon('ic_disabled'),
+        title: 'produit',
+        path: '/dashboard/product/list',
+        icon: <LocalMallIcon />,
     },
+    {
+        title: 'note',
+        path: '/dashboard/rate/list',
+        icon: <RateReviewIcon />,
+    },
+    {
+        title: 'commande',
+        path: '/dashboard/order/list',
+        icon: <ReceiptIcon />,
+    },
+    {
+        title: 'paiement',
+        path: '/dashboard/payment/list',
+        icon: <PaymentIcon />,
+    }
 ];
 
 export default navConfig;

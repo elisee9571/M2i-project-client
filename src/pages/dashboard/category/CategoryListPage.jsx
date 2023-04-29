@@ -5,7 +5,6 @@ import {
     Box,
     Table,
     Stack,
-    Avatar,
     TableBody,
     TableCell,
     TableContainer,
@@ -41,8 +40,7 @@ import {
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
-import useFetchUsers from '../../../hooks/dashboard/user/useFetchUsers';
-
+import useFetchCategories from '../../../hooks/dashboard/category/useFetchCategories';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -74,14 +72,26 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'firstName',
+        id: 'title',
         disablePadding: true,
-        label: 'Nom',
+        label: 'Title',
     },
     {
-        id: 'email',
+        id: 'parent',
         disablePadding: false,
-        label: 'Email',
+        label: 'Catégorie parent',
+    },
+    {
+        id: 'nbrSousCategory',
+        numeric: true,
+        disablePadding: false,
+        label: 'Nombre de sous-catégorie',
+    },
+    {
+        id: 'nbrProduct',
+        numeric: true,
+        disablePadding: false,
+        label: 'Nombre de produit',
     },
     {
         id: "",
@@ -107,7 +117,7 @@ function EnhancedTableHead(props) {
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                         inputProps={{
-                            'aria-label': 'select all users',
+                            'aria-label': 'select all categories',
                         }}
                     />
                 </TableCell>
@@ -179,11 +189,11 @@ function EnhancedTableToolbar(props) {
     );
 }
 
-export default function UserListPage() {
-    const { data } = useFetchUsers();
+export default function CategoryListPage() {
+    const { data } = useFetchCategories();
 
-    const [order, setOrder] = useState('desc');
-    const [orderBy, setOrderBy] = useState('id');
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('title');
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -253,6 +263,11 @@ export default function UserListPage() {
 
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
+    const getSubcategoryCount = (parentId) => {
+        const subcategories = data.filter((category) => category.parent?.id === parentId).length;
+        return subcategories;
+    };
+
     return (
         <Container>
             <Stack sx={{
@@ -266,14 +281,14 @@ export default function UserListPage() {
                     width: "100%"
                 }}>
                     <Typography variant="h4" gutterBottom>
-                        Liste d'utilisateur
+                        Liste de catégorie
                     </Typography>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link underline="hover" color="inherit" component={RouterLink} to="/">
                             Dashboard
                         </Link>
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/user/list">
-                            Utilisateur
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/category/list">
+                            Categorie
                         </Link>
                         <Typography color="text.primary">Liste</Typography>
                     </Breadcrumbs>
@@ -281,7 +296,7 @@ export default function UserListPage() {
                 <Stack sx={{
                     mt: { xs: 5, sm: 0 }
                 }}>
-                    <Button variant="contained" to={"/dashboard/user/new"} component={RouterLink} sx={{
+                    <Button variant="contained" to={"/dashboard/category/new"} component={RouterLink} sx={{
                         py: 1.25,
                         px: 3,
                         borderRadius: 2,
@@ -291,7 +306,7 @@ export default function UserListPage() {
                             color: '#fff',
                             mr: 1
                         }} />
-                        utilisateur
+                        Catégorie
                     </Button>
                 </Stack>
             </Stack>
@@ -326,11 +341,12 @@ export default function UserListPage() {
                                 rowCount={data.length}
                             />
                             <TableBody>
+
                                 {stableSort(data, getComparator(order, orderBy))
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((user) => {
-                                        const isItemSelected = isSelected(user.id);
-                                        const labelId = `enhanced-table-checkbox-${user.id}`;
+                                    .map((category) => {
+                                        const isItemSelected = isSelected(category.id);
+                                        const labelId = `enhanced-table-checkbox-${category.id}`;
 
                                         return (
                                             <TableRow
@@ -338,12 +354,12 @@ export default function UserListPage() {
                                                 role="checkbox"
                                                 aria-checked={isItemSelected}
                                                 tabIndex={-1}
-                                                key={user.id}
+                                                key={category.id}
                                                 selected={isItemSelected}
                                             >
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
-                                                        onClick={(event) => handleClick(event, user.id)}
+                                                        onClick={(event) => handleClick(event, category.id)}
                                                         color="primary"
                                                         checked={isItemSelected}
                                                         inputProps={{
@@ -357,21 +373,16 @@ export default function UserListPage() {
                                                     scope="row"
                                                     padding="none"
                                                 >
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={user.name} src={user.avatar} />
-                                                        <Box>
-                                                            <Typography variant="subtitle1">
-                                                                {user.firstName} {user.lastName}
-                                                            </Typography>
-                                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                                @{user.pseudo}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
+                                                    {category.title}
                                                 </TableCell>
-
                                                 <TableCell align="left">
-                                                    {user.email}
+                                                    {category.parent && category.parent.title}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    {getSubcategoryCount(category.id)}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    {category.products.length}
                                                 </TableCell>
                                                 <TableCell align="right">
                                                     <IconButton onClick={handleOpen}>
@@ -381,7 +392,6 @@ export default function UserListPage() {
                                             </TableRow>
                                         );
                                     })}
-
                             </TableBody>
                         </Table>
                         <TablePagination

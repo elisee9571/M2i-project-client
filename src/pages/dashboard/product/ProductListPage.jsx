@@ -41,8 +41,10 @@ import {
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
-import useFetchUsers from '../../../hooks/dashboard/user/useFetchUsers';
+import { fDate } from '../../../utils/formatTime';
+import { fCurrency } from '../../../utils/formatNumber';
 
+import useFetchProducts from '../../../hooks/dashboard/product/useFetchProducts';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -74,14 +76,30 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'firstName',
+        id: 'title',
         disablePadding: true,
-        label: 'Nom',
+        label: 'Title',
     },
     {
-        id: 'email',
+        id: 'price',
+        numeric: true,
         disablePadding: false,
-        label: 'Email',
+        label: 'Prix',
+    },
+    {
+        id: 'category',
+        disablePadding: false,
+        label: 'Catégorie',
+    },
+    {
+        id: 'status',
+        disablePadding: false,
+        label: 'Statut',
+    },
+    {
+        id: 'createdAt',
+        disablePadding: false,
+        label: 'Date',
     },
     {
         id: "",
@@ -107,7 +125,7 @@ function EnhancedTableHead(props) {
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                         inputProps={{
-                            'aria-label': 'select all users',
+                            'aria-label': 'select all products',
                         }}
                     />
                 </TableCell>
@@ -179,11 +197,11 @@ function EnhancedTableToolbar(props) {
     );
 }
 
-export default function UserListPage() {
-    const { data } = useFetchUsers();
+export default function ProductListPage() {
+    const { data } = useFetchProducts();
 
-    const [order, setOrder] = useState('desc');
-    const [orderBy, setOrderBy] = useState('id');
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('title');
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -266,14 +284,14 @@ export default function UserListPage() {
                     width: "100%"
                 }}>
                     <Typography variant="h4" gutterBottom>
-                        Liste d'utilisateur
+                        Liste de produit
                     </Typography>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link underline="hover" color="inherit" component={RouterLink} to="/">
                             Dashboard
                         </Link>
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/user/list">
-                            Utilisateur
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/product/list">
+                            Produit
                         </Link>
                         <Typography color="text.primary">Liste</Typography>
                     </Breadcrumbs>
@@ -281,7 +299,7 @@ export default function UserListPage() {
                 <Stack sx={{
                     mt: { xs: 5, sm: 0 }
                 }}>
-                    <Button variant="contained" to={"/dashboard/user/new"} component={RouterLink} sx={{
+                    <Button variant="contained" to={"/dashboard/product/new"} component={RouterLink} sx={{
                         py: 1.25,
                         px: 3,
                         borderRadius: 2,
@@ -291,7 +309,7 @@ export default function UserListPage() {
                             color: '#fff',
                             mr: 1
                         }} />
-                        utilisateur
+                        Produit
                     </Button>
                 </Stack>
             </Stack>
@@ -326,11 +344,12 @@ export default function UserListPage() {
                                 rowCount={data.length}
                             />
                             <TableBody>
+
                                 {stableSort(data, getComparator(order, orderBy))
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((user) => {
-                                        const isItemSelected = isSelected(user.id);
-                                        const labelId = `enhanced-table-checkbox-${user.id}`;
+                                    .map((product) => {
+                                        const isItemSelected = isSelected(product.id);
+                                        const labelId = `enhanced-table-checkbox-${product.id}`;
 
                                         return (
                                             <TableRow
@@ -338,12 +357,12 @@ export default function UserListPage() {
                                                 role="checkbox"
                                                 aria-checked={isItemSelected}
                                                 tabIndex={-1}
-                                                key={user.id}
+                                                key={product.id}
                                                 selected={isItemSelected}
                                             >
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
-                                                        onClick={(event) => handleClick(event, user.id)}
+                                                        onClick={(event) => handleClick(event, product.id)}
                                                         color="primary"
                                                         checked={isItemSelected}
                                                         inputProps={{
@@ -357,21 +376,19 @@ export default function UserListPage() {
                                                     scope="row"
                                                     padding="none"
                                                 >
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={user.name} src={user.avatar} />
-                                                        <Box>
-                                                            <Typography variant="subtitle1">
-                                                                {user.firstName} {user.lastName}
-                                                            </Typography>
-                                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                                @{user.pseudo}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Stack>
+                                                    {product.title}
                                                 </TableCell>
-
-                                                <TableCell align="left">
-                                                    {user.email}
+                                                <TableCell>
+                                                    {fCurrency(product.price)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {product.category.title}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {product.status}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {fDate(product.createdAt)}
                                                 </TableCell>
                                                 <TableCell align="right">
                                                     <IconButton onClick={handleOpen}>
@@ -381,7 +398,6 @@ export default function UserListPage() {
                                             </TableRow>
                                         );
                                     })}
-
                             </TableBody>
                         </Table>
                         <TablePagination

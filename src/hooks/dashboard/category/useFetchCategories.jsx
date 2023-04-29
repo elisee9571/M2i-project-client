@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const useFetchUsers = () => {
+const useFetchCategories = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/users')
+        axios.get('http://localhost:8081/categories')
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -13,4 +13,4 @@ const useFetchUsers = () => {
     return { data };
 };
 
-export default useFetchUsers;
+export default useFetchCategories;

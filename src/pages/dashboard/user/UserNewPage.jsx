@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useDropzone } from 'react-dropzone';
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Container, Stack, Typography, Breadcrumbs, Link, Box, Paper, Grid, FormControl,
     InputLabel,
@@ -152,10 +153,10 @@ export default function UserNewPage() {
                         Crée un utilisateur
                     </Typography>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" href="/">
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/">
                             Dashboard
                         </Link>
-                        <Link underline="hover" color="inherit" href="/dashboard/user/list">
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/user/list">
                             Utilisateur
                         </Link>
                         <Typography color="text.primary">Créer</Typography>
