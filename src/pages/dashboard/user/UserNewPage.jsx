@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useDropzone } from 'react-dropzone';
 import {
@@ -16,6 +17,7 @@ import {
     VisibilityOff,
     Visibility
 } from '@mui/icons-material';
+import axios from 'axios';
 
 function Previews(props) {
     const { register } = props
@@ -27,7 +29,7 @@ function Previews(props) {
         },
         onDrop: acceptedFiles => {
             const file = acceptedFiles[0];
-            register("file", { value: file })
+            register("url", { value: file })
             setFile({ preview: URL.createObjectURL(file) })
         },
     });
@@ -109,20 +111,30 @@ function Previews(props) {
 }
 
 export default function UserNewPage() {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordValue, setPasswordValue] = useState("");
 
     const { register, handleSubmit, formState: { errors } } = useForm();
     const onSubmit = (data, e) => {
         e.preventDefault();
-        console.log(data, e);
+
+        axios.post(`http://localhost:8081/users`, {
+            avatar: data.url.name,
+            firstName: data.firstname,
+            lastName: data.lastname,
+            pseudo: data.pseudo,
+            email: data.email,
+            phone: data.phone,
+            password: data.password
+        }).then(res => {
+            console.log(res)
+            navigate("/dashboard/user/list")
+
+        }).catch(err => console.error(err))
     };
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
 
     return (
         <Container>
@@ -214,10 +226,12 @@ export default function UserNewPage() {
                             <Grid item xs={12}>
                                 <TextField
                                     id="phone"
-                                    label="Téléphone"
+                                    label="Téléphone*"
                                     type='tel'
                                     fullWidth
                                     {...register("phone")}
+                                    helperText={errors.phone && "Téléphone requis."}
+                                    error={Boolean(errors.phone)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -232,7 +246,6 @@ export default function UserNewPage() {
                                                 <IconButton
                                                     aria-label="toggle password visibility"
                                                     onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
                                                 >
                                                     {showPassword ?
                                                         <Visibility color={errors.password && "error"} /> :

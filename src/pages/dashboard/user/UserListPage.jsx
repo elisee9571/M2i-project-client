@@ -41,9 +41,7 @@ import {
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
-
-import USERLIST from '../../../_mock/user';
-
+import useFetchUsers from '../../../hooks/dashboard/user/useFetchUsers';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -76,7 +74,7 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
+        id: 'firstName',
         disablePadding: true,
         label: 'Nom',
     },
@@ -93,13 +91,8 @@ const headCells = [
 
 ];
 
-const DEFAULT_ORDER = 'asc';
-const DEFAULT_ORDER_BY = 'name';
-const DEFAULT_ROWS_PER_PAGE = 10;
-
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-        props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
     const createSortHandler = (newOrderBy) => (event) => {
         onRequestSort(event, newOrderBy);
     };
@@ -187,12 +180,14 @@ function EnhancedTableToolbar(props) {
 }
 
 export default function UserListPage() {
-    const [order, setOrder] = useState(DEFAULT_ORDER);
-    const [orderBy, setOrderBy] = useState(DEFAULT_ORDER_BY);
+    const { data } = useFetchUsers();
+
+    const [order, setOrder] = useState('desc');
+    const [orderBy, setOrderBy] = useState('id');
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
-    const [visibleRows, setVisibleRows] = useState(null);
-    const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -213,53 +208,26 @@ export default function UserListPage() {
         setOpenDialog(false);
     };
 
-    useEffect(() => {
-        let rowsOnMount = stableSort(
-            USERLIST,
-            getComparator(DEFAULT_ORDER, DEFAULT_ORDER_BY),
-        );
-
-        rowsOnMount = rowsOnMount.slice(
-            0 * DEFAULT_ROWS_PER_PAGE,
-            0 * DEFAULT_ROWS_PER_PAGE + DEFAULT_ROWS_PER_PAGE,
-        );
-
-        setVisibleRows(rowsOnMount);
-    }, []);
-
-    const handleRequestSort = useCallback(
-        (event, newOrderBy) => {
-            const isAsc = orderBy === newOrderBy && order === 'asc';
-            const toggledOrder = isAsc ? 'desc' : 'asc';
-            setOrder(toggledOrder);
-            setOrderBy(newOrderBy);
-
-            const sortedRows = stableSort(USERLIST, getComparator(toggledOrder, newOrderBy));
-            const updatedRows = sortedRows.slice(
-                page * rowsPerPage,
-                page * rowsPerPage + rowsPerPage,
-            );
-
-            setVisibleRows(updatedRows);
-        },
-        [order, orderBy, page, rowsPerPage],
-    );
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = USERLIST.map((n) => n.name);
-            setSelected(newSelected);
+            const newSelecteds = data.map((n) => n.id);
+            setSelected(newSelecteds);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
+    const handleClick = (event, id) => {
+        const selectedIndex = selected.indexOf(id);
         let newSelected = [];
-
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -272,42 +240,18 @@ export default function UserListPage() {
         }
 
         setSelected(newSelected);
+    }
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
     };
 
-    const handleChangePage = useCallback(
-        (event, newPage) => {
-            setPage(newPage);
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
-            const sortedRows = stableSort(USERLIST, getComparator(order, orderBy));
-            const updatedRows = sortedRows.slice(
-                newPage * rowsPerPage,
-                newPage * rowsPerPage + rowsPerPage,
-            );
-            setVisibleRows(updatedRows);
-
-        },
-        [order, orderBy, rowsPerPage],
-    );
-
-    const handleChangeRowsPerPage = useCallback(
-        (event) => {
-            const updatedRowsPerPage = parseInt(event.target.value, 10);
-            setRowsPerPage(updatedRowsPerPage);
-
-            setPage(0);
-
-            const sortedRows = stableSort(USERLIST, getComparator(order, orderBy));
-            const updatedRows = sortedRows.slice(
-                0 * updatedRowsPerPage,
-                0 * updatedRowsPerPage + updatedRowsPerPage,
-            );
-
-            setVisibleRows(updatedRows);
-        },
-        [order, orderBy],
-    );
-
-    const isSelected = (name) => selected.indexOf(name) !== -1;
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
     return (
         <Container>
@@ -360,7 +304,9 @@ export default function UserListPage() {
                     borderRadius: 4,
                     boxShadow: "rgba(145, 158, 171, 0.2) 0px 0px 2px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;"
                 }}>
-                    <EnhancedTableToolbar numSelected={selected.length} handleOpenDialog={handleOpenDialog} />
+                    <EnhancedTableToolbar numSelected={selected.length}
+                        handleOpenDialog={handleOpenDialog}
+                    />
                     <TableContainer>
                         <Table
                             sx={{
@@ -377,24 +323,27 @@ export default function UserListPage() {
                                 orderBy={orderBy}
                                 onSelectAllClick={handleSelectAllClick}
                                 onRequestSort={handleRequestSort}
-                                rowCount={USERLIST.length}
+                                rowCount={data.length}
                             />
                             <TableBody>
-                                {visibleRows
-                                    ? visibleRows.map((USERLIST, index) => {
-                                        const isItemSelected = isSelected(USERLIST.name);
-                                        const labelId = `enhanced-table-checkbox-${index}`;
+                                {stableSort(data, getComparator(order, orderBy))
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((user) => {
+                                        const isItemSelected = isSelected(user.id);
+                                        const labelId = `enhanced-table-checkbox-${user.id}`;
 
                                         return (
                                             <TableRow
                                                 hover
+                                                role="checkbox"
+                                                aria-checked={isItemSelected}
                                                 tabIndex={-1}
-                                                key={USERLIST.name}
+                                                key={user.id}
                                                 selected={isItemSelected}
                                             >
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
-                                                        onClick={(event) => handleClick(event, USERLIST.name)}
+                                                        onClick={(event) => handleClick(event, user.id)}
                                                         color="primary"
                                                         checked={isItemSelected}
                                                         inputProps={{
@@ -409,20 +358,20 @@ export default function UserListPage() {
                                                     padding="none"
                                                 >
                                                     <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={USERLIST.name} src={USERLIST.avatar} />
-                                                        <Box sx={{ flexGrow: 1 }}>
+                                                        <Avatar alt={user.name} src={user.avatar} />
+                                                        <Box>
                                                             <Typography variant="subtitle1">
-                                                                {USERLIST.name}
+                                                                {user.firstName} {user.lastName}
                                                             </Typography>
                                                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                                @{USERLIST.pseudo}
+                                                                @{user.pseudo}
                                                             </Typography>
                                                         </Box>
                                                     </Stack>
-
                                                 </TableCell>
+
                                                 <TableCell align="left">
-                                                    {USERLIST.email}
+                                                    {user.email}
                                                 </TableCell>
                                                 <TableCell align="right">
                                                     <IconButton onClick={handleOpen}>
@@ -431,126 +380,128 @@ export default function UserListPage() {
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    })
-                                    : null}
-                                <Menu
-                                    open={open}
-                                    anchorEl={open}
-                                    onClose={handleClose}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                    PaperProps={{
-                                        sx: {
-                                            ml: -2,
-                                            width: 180,
-                                            borderRadius: 2,
-                                            '& .MuiMenuItem-root': {
-                                                typography: 'body2',
-                                                borderRadius: 1,
-                                                p: 1,
-                                                mx: 1
-                                            },
-                                        },
-                                    }}
-                                >
-                                    <MenuItem onClick={handleClose}>
-                                        <ListItemIcon>
-                                            <PersonIcon sx={{
-                                                color: "#000000DE"
-                                            }} />
-                                        </ListItemIcon>
-                                        Profil
-                                    </MenuItem>
-                                    <MenuItem onClick={handleClose}>
-                                        <ListItemIcon>
-                                            <EditIcon sx={{
-                                                color: "#000000DE"
-                                            }} />
-                                        </ListItemIcon>
-                                        Modifier
-                                    </MenuItem>
-                                    <MenuItem onClick={handleOpenDialog}>
-                                        <ListItemIcon>
-                                            <DeleteIcon sx={{
-                                                color: '#ff4842'
-                                            }} />
-                                        </ListItemIcon>
-                                        <Typography variant="subtitle1" sx={{
-                                            color: '#ff4842'
-                                        }}>
-                                            Supprimer
-                                        </Typography>
-                                    </MenuItem>
-                                </Menu>
-
-                                <Dialog
-                                    open={openDialog}
-                                    onClose={handleCloseDialog}
-                                    aria-labelledby="alert-dialog-title"
-                                    aria-describedby="alert-dialog-description"
-                                    PaperProps={{
-                                        sx: {
-                                            width: 500,
-                                            borderRadius: 3,
-                                            p: 2
-                                        }
-                                    }}
-                                >
-                                    <DialogTitle id="alert-dialog-title" variant='h5'>
-                                        Supprimer
-                                    </DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText id="alert-dialog-description">
-                                            Voulez-vous vraiment supprimer ?
-                                        </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={handleCloseDialog} variant='contained' sx={{
-                                            background: '#ff4842',
-                                            borderRadius: 2,
-                                            py: 1.5,
-                                            px: 3,
-                                            fontWeight: 700,
-                                            boxShadow: 0,
-                                            textTransform: "capitalize",
-                                            "&:hover": {
-                                                background: "#b71d18",
-                                                boxShadow: 0,
-                                            }
-                                        }}>
-                                            Supprimer
-                                        </Button>
-                                        <Button onClick={handleCloseDialog} variant='outlined' sx={{
-                                            borderRadius: 2,
-                                            borderColor: "#212b3650",
-                                            color: "#000000DE",
-                                            py: 1.5,
-                                            px: 3,
-                                            fontWeight: 700,
-                                            textTransform: "capitalize",
-                                            "&:hover": {
-                                                borderColor: "#212b36"
-                                            }
-                                        }}>
-                                            Annuler
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
+                                    })}
 
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={data.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                     </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25]}
-                        component="div"
-                        count={USERLIST.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+
+                    <Menu
+                        open={open}
+                        anchorEl={open}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        PaperProps={{
+                            sx: {
+                                ml: -2,
+                                width: 180,
+                                borderRadius: 2,
+                                '& .MuiMenuItem-root': {
+                                    typography: 'body2',
+                                    borderRadius: 1,
+                                    p: 1,
+                                    mx: 1
+                                },
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={handleClose}>
+                            <ListItemIcon>
+                                <PersonIcon sx={{
+                                    color: "#000000DE"
+                                }} />
+                            </ListItemIcon>
+                            Profil
+                        </MenuItem>
+                        <MenuItem onClick={handleClose}>
+                            <ListItemIcon>
+                                <EditIcon sx={{
+                                    color: "#000000DE"
+                                }} />
+                            </ListItemIcon>
+                            Modifier
+                        </MenuItem>
+
+                        <MenuItem onClick={handleOpenDialog}>
+                            <ListItemIcon>
+                                <DeleteIcon sx={{
+                                    color: '#ff4842'
+                                }} />
+                            </ListItemIcon>
+                            <Typography variant="subtitle1" sx={{
+                                color: '#ff4842'
+                            }}>
+                                Supprimer
+                            </Typography>
+                        </MenuItem>
+                    </Menu>
+
+                    <Dialog
+                        open={openDialog}
+                        onClose={handleCloseDialog}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                        PaperProps={{
+                            sx: {
+                                width: 500,
+                                borderRadius: 3,
+                                p: 2
+                            }
+                        }}
+                    >
+                        <DialogTitle id="alert-dialog-title" variant='h5'>
+                            Supprimer
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                Voulez-vous vraiment supprimer ?
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog} variant='contained' sx={{
+                                background: '#ff4842',
+                                borderRadius: 2,
+                                py: 1.5,
+                                px: 3,
+                                fontWeight: 700,
+                                boxShadow: 0,
+                                textTransform: "capitalize",
+                                "&:hover": {
+                                    background: "#b71d18",
+                                    boxShadow: 0,
+                                }
+                            }}>
+                                Supprimer
+                            </Button>
+                            <Button onClick={handleCloseDialog} variant='outlined' sx={{
+                                borderRadius: 2,
+                                borderColor: "#212b3650",
+                                color: "#000000DE",
+                                py: 1.5,
+                                px: 3,
+                                fontWeight: 700,
+                                textTransform: "capitalize",
+                                "&:hover": {
+                                    borderColor: "#212b36"
+                                }
+                            }}>
+                                Annuler
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Paper>
             </Box>
         </Container>
     );
+
 }    
