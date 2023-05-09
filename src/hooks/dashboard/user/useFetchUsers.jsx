@@ -5,7 +5,7 @@ const useFetchUsers = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/users')
+        axios.get('http://localhost:8081/api/v1/users')
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);

@@ -11,39 +11,41 @@ import CategoryListPage from './pages/dashboard/category/CategoryListPage';
 
 import ProductListPage from './pages/dashboard/product/ProductListPage';
 
-import LoginPage from './pages/LoginPage';
-import Page404 from './pages/Page404';
+import LoginPage from './pages/auth/LoginPage';
+import HomePage from './pages/HomePage';
+import Page404 from './pages/error/Page404';
+import Page401 from './pages/error/Page401';
 import DashboardAppPage from './pages/DashboardAppPage';
-
+import CheckAuth from './utils/auth/CheckAuth';
 
 export default function Router() {
+
     const routes = useRoutes([
+        { path: '/', element: <HomePage /> },
         {
-            path: '/dashboard',
-            element: <DashboardLayout />,
+            path: 'dashboard',
+            element: <CheckAuth children={<DashboardLayout />} />,
             children: [
-                { element: <Navigate to="/dashboard/app" />, index: true },
-                { path: 'app', element: <DashboardAppPage /> },
+                { path: 'app', element: <CheckAuth children={<DashboardAppPage />} /> },
                 {
                     path: "user",
                     children: [
-                        { path: 'list', element: <UserListPage /> },
-                        { path: 'new', element: <UserNewPage /> },
+                        { path: 'list', element: <CheckAuth children={<UserListPage />} /> },
+                        { path: 'new', element: <CheckAuth children={<UserNewPage />} /> },
                     ]
                 }, {
                     path: "category",
                     children: [
-                        { path: 'list', element: <CategoryListPage /> },
-                        { path: 'new', element: <CategoryListPage /> },
+                        { path: 'list', element: <CheckAuth children={<CategoryListPage />} /> },
+                        { path: 'new', element: <CheckAuth children={<CategoryListPage />} /> },
                     ]
                 }, {
                     path: "product",
                     children: [
-                        { path: 'list', element: <ProductListPage /> },
-                        { path: 'new', element: <ProductListPage /> },
+                        { path: 'list', element: <CheckAuth children={<ProductListPage />} /> },
+                        { path: 'new', element: <CheckAuth children={<ProductListPage />} /> },
                     ]
                 }
-
             ],
         },
         {
@@ -53,8 +55,8 @@ export default function Router() {
         {
             element: <SimpleLayout />,
             children: [
-                { element: <Navigate to="/dashboard/app" />, index: true },
                 { path: '404', element: <Page404 /> },
+                { path: '401', element: <Page401 /> },
                 { path: '*', element: <Navigate to="/404" /> },
             ],
         },

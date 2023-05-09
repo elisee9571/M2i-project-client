@@ -13,22 +13,21 @@ const StyledContent = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 0),
 }));
 
-export default function Page404() {
+export default function Page401() {
     return (
         <>
             <Helmet>
-                <title> 404 Page Not Found | Minimal UI </title>
+                <title> 401 </title>
             </Helmet>
 
             <Container>
                 <StyledContent sx={{ textAlign: 'center', alignItems: 'center' }}>
                     <Typography variant="h4" paragraph>
-                        Sorry, page not found!
+                        Désolé, non autorisé!
                     </Typography>
 
                     <Typography sx={{ color: 'text.secondary', }}>
-                        Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be sure to check your
-                        spelling.
+                        Vous n'êtes pas autorisé à accéder à cette page. Veuillez vous connecter avec un compte ayant les autorisations appropriées.
                     </Typography>
 
                     <Box
