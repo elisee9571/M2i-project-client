@@ -5,7 +5,8 @@ export default function CheckAuth({ children }) {
     const token = localStorage.getItem('TOKEN');
 
     if (token) {
-        const { roles } = jwt_decode(token)
+        const { roles } = jwt_decode(token);
+
         if (roles === 'ROLE_ADMIN') {
             return children;
         } else {

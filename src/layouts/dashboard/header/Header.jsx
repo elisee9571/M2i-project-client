@@ -30,7 +30,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     },
 }));
 
-export default function Header({ onOpenNav }) {
+export default function Header({ onOpenNav, data }) {
     return (
         <StyledRoot>
             <StyledToolbar>
@@ -56,7 +56,7 @@ export default function Header({ onOpenNav }) {
                     }}
                 >
                     <NotificationsPopover />
-                    <AccountPopover />
+                    <AccountPopover data={data} />
                 </Stack>
             </StyledToolbar>
         </StyledRoot>

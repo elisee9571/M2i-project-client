@@ -8,8 +8,8 @@ const users = [...Array(24)].map((_, index) => ({
     pseudo: faker.internet.userName(),
     email: faker.internet.email(),
     role: sample([
-        'USER',
-        'ADMIN',
+        'ROLE_USER',
+        'ROLE_ADMIN',
     ]),
 }));
 

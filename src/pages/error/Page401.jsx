@@ -17,7 +17,7 @@ export default function Page401() {
     return (
         <>
             <Helmet>
-                <title> 401 </title>
+                <title>401</title>
             </Helmet>
 
             <Container>

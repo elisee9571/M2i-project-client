@@ -39,6 +39,7 @@ import {
     Add as AddIcon
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
+import { Helmet } from 'react-helmet-async';
 
 import useFetchCategories from '../../../hooks/dashboard/category/useFetchCategories';
 
@@ -269,249 +270,255 @@ export default function CategoryListPage() {
     };
 
     return (
-        <Container>
-            <Stack sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexDirection: { xs: "column", sm: "row" },
-                mb: 5
-            }}>
-                <Stack sx={{
-                    width: "100%"
-                }}>
-                    <Typography variant="h4" gutterBottom>
-                        Liste de catégorie
-                    </Typography>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/">
-                            Dashboard
-                        </Link>
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/category/list">
-                            Categorie
-                        </Link>
-                        <Typography color="text.primary">Liste</Typography>
-                    </Breadcrumbs>
-                </Stack>
-                <Stack sx={{
-                    mt: { xs: 5, sm: 0 }
-                }}>
-                    <Button variant="contained" to={"/dashboard/category/new"} component={RouterLink} sx={{
-                        py: 1.25,
-                        px: 3,
-                        borderRadius: 2,
-                        fontWeight: 700,
-                    }}>
-                        <AddIcon sx={{
-                            color: '#fff',
-                            mr: 1
-                        }} />
-                        Catégorie
-                    </Button>
-                </Stack>
-            </Stack>
+        <>
+            <Helmet>
+                <title>Catégorie</title>
+            </Helmet>
 
-            <Box sx={{ width: "100%" }}>
-                <Paper sx={{
-                    width: '100%',
-                    mb: 2,
-                    overflow: "hidden",
-                    borderRadius: 4,
-                    boxShadow: "rgba(145, 158, 171, 0.2) 0px 0px 2px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;"
+            <Container>
+                <Stack sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexDirection: { xs: "column", sm: "row" },
+                    mb: 5
                 }}>
-                    <EnhancedTableToolbar numSelected={selected.length}
-                        handleOpenDialog={handleOpenDialog}
-                    />
-                    <TableContainer>
-                        <Table
-                            sx={{
-                                minWidth: 750,
-                                '& .MuiTableHead-root': {
-                                    background: "#f4f6f8",
+                    <Stack sx={{
+                        width: "100%"
+                    }}>
+                        <Typography variant="h4" gutterBottom>
+                            Liste de catégorie
+                        </Typography>
+                        <Breadcrumbs aria-label="breadcrumb">
+                            <Link underline="hover" color="inherit" component={RouterLink} to="/">
+                                Dashboard
+                            </Link>
+                            <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/category/list">
+                                Categorie
+                            </Link>
+                            <Typography color="text.primary">Liste</Typography>
+                        </Breadcrumbs>
+                    </Stack>
+                    <Stack sx={{
+                        mt: { xs: 5, sm: 0 }
+                    }}>
+                        <Button variant="contained" to={"/dashboard/category/new"} component={RouterLink} sx={{
+                            py: 1.25,
+                            px: 3,
+                            borderRadius: 2,
+                            fontWeight: 700,
+                        }}>
+                            <AddIcon sx={{
+                                color: '#fff',
+                                mr: 1
+                            }} />
+                            Catégorie
+                        </Button>
+                    </Stack>
+                </Stack>
+
+                <Box sx={{ width: "100%" }}>
+                    <Paper sx={{
+                        width: '100%',
+                        mb: 2,
+                        overflow: "hidden",
+                        borderRadius: 4,
+                        boxShadow: "rgba(145, 158, 171, 0.2) 0px 0px 2px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;"
+                    }}>
+                        <EnhancedTableToolbar numSelected={selected.length}
+                            handleOpenDialog={handleOpenDialog}
+                        />
+                        <TableContainer>
+                            <Table
+                                sx={{
+                                    minWidth: 750,
+                                    '& .MuiTableHead-root': {
+                                        background: "#f4f6f8",
+                                    },
+                                }}
+                                aria-labelledby="tableTitle"
+                            >
+                                <EnhancedTableHead
+                                    numSelected={selected.length}
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onSelectAllClick={handleSelectAllClick}
+                                    onRequestSort={handleRequestSort}
+                                    rowCount={data.length}
+                                />
+                                <TableBody>
+
+                                    {stableSort(data, getComparator(order, orderBy))
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((category) => {
+                                            const isItemSelected = isSelected(category.id);
+                                            const labelId = `enhanced-table-checkbox-${category.id}`;
+
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    role="checkbox"
+                                                    aria-checked={isItemSelected}
+                                                    tabIndex={-1}
+                                                    key={category.id}
+                                                    selected={isItemSelected}
+                                                >
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            onClick={(event) => handleClick(event, category.id)}
+                                                            color="primary"
+                                                            checked={isItemSelected}
+                                                            inputProps={{
+                                                                'aria-labelledby': labelId,
+                                                            }}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell
+                                                        component="th"
+                                                        id={labelId}
+                                                        scope="row"
+                                                        padding="none"
+                                                    >
+                                                        {category.title}
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {category.parent && category.parent.title}
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {getSubcategoryCount(category.id)}
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {category.products.length}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <IconButton onClick={handleOpen}>
+                                                            <MoreIcon />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                </TableBody>
+                            </Table>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                component="div"
+                                count={data.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </TableContainer>
+
+                        <Menu
+                            open={open}
+                            anchorEl={open}
+                            onClose={handleClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{
+                                sx: {
+                                    ml: -2,
+                                    width: 180,
+                                    borderRadius: 2,
+                                    '& .MuiMenuItem-root': {
+                                        typography: 'body2',
+                                        borderRadius: 1,
+                                        p: 1,
+                                        mx: 1
+                                    },
                                 },
                             }}
-                            aria-labelledby="tableTitle"
                         >
-                            <EnhancedTableHead
-                                numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
-                                onSelectAllClick={handleSelectAllClick}
-                                onRequestSort={handleRequestSort}
-                                rowCount={data.length}
-                            />
-                            <TableBody>
+                            <MenuItem onClick={handleClose}>
+                                <ListItemIcon>
+                                    <PersonIcon sx={{
+                                        color: "#000000DE"
+                                    }} />
+                                </ListItemIcon>
+                                Profil
+                            </MenuItem>
+                            <MenuItem onClick={handleClose}>
+                                <ListItemIcon>
+                                    <EditIcon sx={{
+                                        color: "#000000DE"
+                                    }} />
+                                </ListItemIcon>
+                                Modifier
+                            </MenuItem>
 
-                                {stableSort(data, getComparator(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((category) => {
-                                        const isItemSelected = isSelected(category.id);
-                                        const labelId = `enhanced-table-checkbox-${category.id}`;
-
-                                        return (
-                                            <TableRow
-                                                hover
-                                                role="checkbox"
-                                                aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={category.id}
-                                                selected={isItemSelected}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        onClick={(event) => handleClick(event, category.id)}
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell
-                                                    component="th"
-                                                    id={labelId}
-                                                    scope="row"
-                                                    padding="none"
-                                                >
-                                                    {category.title}
-                                                </TableCell>
-                                                <TableCell align="left">
-                                                    {category.parent && category.parent.title}
-                                                </TableCell>
-                                                <TableCell align="left">
-                                                    {getSubcategoryCount(category.id)}
-                                                </TableCell>
-                                                <TableCell align="left">
-                                                    {category.products.length}
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    <IconButton onClick={handleOpen}>
-                                                        <MoreIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={data.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </TableContainer>
-
-                    <Menu
-                        open={open}
-                        anchorEl={open}
-                        onClose={handleClose}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        PaperProps={{
-                            sx: {
-                                ml: -2,
-                                width: 180,
-                                borderRadius: 2,
-                                '& .MuiMenuItem-root': {
-                                    typography: 'body2',
-                                    borderRadius: 1,
-                                    p: 1,
-                                    mx: 1
-                                },
-                            },
-                        }}
-                    >
-                        <MenuItem onClick={handleClose}>
-                            <ListItemIcon>
-                                <PersonIcon sx={{
-                                    color: "#000000DE"
-                                }} />
-                            </ListItemIcon>
-                            Profil
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                            <ListItemIcon>
-                                <EditIcon sx={{
-                                    color: "#000000DE"
-                                }} />
-                            </ListItemIcon>
-                            Modifier
-                        </MenuItem>
-
-                        <MenuItem onClick={handleOpenDialog}>
-                            <ListItemIcon>
-                                <DeleteIcon sx={{
+                            <MenuItem onClick={handleOpenDialog}>
+                                <ListItemIcon>
+                                    <DeleteIcon sx={{
+                                        color: '#ff4842'
+                                    }} />
+                                </ListItemIcon>
+                                <Typography variant="subtitle1" sx={{
                                     color: '#ff4842'
-                                }} />
-                            </ListItemIcon>
-                            <Typography variant="subtitle1" sx={{
-                                color: '#ff4842'
-                            }}>
-                                Supprimer
-                            </Typography>
-                        </MenuItem>
-                    </Menu>
+                                }}>
+                                    Supprimer
+                                </Typography>
+                            </MenuItem>
+                        </Menu>
 
-                    <Dialog
-                        open={openDialog}
-                        onClose={handleCloseDialog}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                        PaperProps={{
-                            sx: {
-                                width: 500,
-                                borderRadius: 3,
-                                p: 2
-                            }
-                        }}
-                    >
-                        <DialogTitle id="alert-dialog-title" variant='h5'>
-                            Supprimer
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Voulez-vous vraiment supprimer ?
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseDialog} variant='contained' sx={{
-                                background: '#ff4842',
-                                borderRadius: 2,
-                                py: 1.5,
-                                px: 3,
-                                fontWeight: 700,
-                                boxShadow: 0,
-                                textTransform: "capitalize",
-                                "&:hover": {
-                                    background: "#b71d18",
-                                    boxShadow: 0,
+                        <Dialog
+                            open={openDialog}
+                            onClose={handleCloseDialog}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                            PaperProps={{
+                                sx: {
+                                    width: 500,
+                                    borderRadius: 3,
+                                    p: 2
                                 }
-                            }}>
+                            }}
+                        >
+                            <DialogTitle id="alert-dialog-title" variant='h5'>
                                 Supprimer
-                            </Button>
-                            <Button onClick={handleCloseDialog} variant='outlined' sx={{
-                                borderRadius: 2,
-                                borderColor: "#212b3650",
-                                color: "#000000DE",
-                                py: 1.5,
-                                px: 3,
-                                fontWeight: 700,
-                                textTransform: "capitalize",
-                                "&:hover": {
-                                    borderColor: "#212b36"
-                                }
-                            }}>
-                                Annuler
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-                </Paper>
-            </Box>
-        </Container>
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Voulez-vous vraiment supprimer ?
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseDialog} variant='contained' sx={{
+                                    background: '#ff4842',
+                                    borderRadius: 2,
+                                    py: 1.5,
+                                    px: 3,
+                                    fontWeight: 700,
+                                    boxShadow: 0,
+                                    textTransform: "capitalize",
+                                    "&:hover": {
+                                        background: "#b71d18",
+                                        boxShadow: 0,
+                                    }
+                                }}>
+                                    Supprimer
+                                </Button>
+                                <Button onClick={handleCloseDialog} variant='outlined' sx={{
+                                    borderRadius: 2,
+                                    borderColor: "#212b3650",
+                                    color: "#000000DE",
+                                    py: 1.5,
+                                    px: 3,
+                                    fontWeight: 700,
+                                    textTransform: "capitalize",
+                                    "&:hover": {
+                                        borderColor: "#212b36"
+                                    }
+                                }}>
+                                    Annuler
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </Paper>
+                </Box>
+            </Container>
+        </>
     );
 
 }    

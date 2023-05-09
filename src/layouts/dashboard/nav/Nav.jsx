@@ -25,7 +25,7 @@ const StyledAccount = styled('div')(({ theme }) => ({
     backgroundColor: alpha(theme.palette.grey[500], 0.12),
 }));
 
-export default function Nav({ openNav, onCloseNav }) {
+export default function Nav({ openNav, onCloseNav, data }) {
     const { pathname } = useLocation();
 
     const isDesktop = useResponsive('up', 'lg');
@@ -59,11 +59,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
                         <Box sx={{ ml: 2 }}>
                             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                                {account.displayName}
+                                {data.firstName} {data.lastName}
                             </Typography>
 
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                {account.role}
+                                {data.role}
                             </Typography>
                         </Box>
                     </StyledAccount>
