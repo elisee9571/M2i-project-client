@@ -1,27 +1,40 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
+import Layout from './layouts/simple/Layout';
 import DashboardLayout from './layouts/dashboard/DashboardLayout';
 import SimpleLayout from './layouts/simple/SimpleLayout';
 
-// page
+// pages error
+import Page404 from './pages/error/Page404';
+import Page401 from './pages/error/Page401';
+
+// pages
 import UserListPage from './pages/dashboard/user/UserListPage';
 import UserNewPage from './pages/dashboard/user/UserNewPage';
 
 import CategoryListPage from './pages/dashboard/category/CategoryListPage';
-
 import ProductListPage from './pages/dashboard/product/ProductListPage';
 
-import LoginPage from './pages/auth/LoginPage';
 import HomePage from './pages/HomePage';
-import Page404 from './pages/error/Page404';
-import Page401 from './pages/error/Page401';
 import DashboardAppPage from './pages/DashboardAppPage';
-import CheckAuth from './utils/auth/CheckAuth';
+
+// auth page
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+
+// middleware
+import { CheckAuth, IsAlreadyAuth } from './utils/auth/CheckAuth';
+
 
 export default function Router() {
 
     const routes = useRoutes([
-        { path: '/', element: <HomePage /> },
+        {
+            element: <Layout />,
+            children: [
+                { path: '/', element: <HomePage /> }
+            ]
+        },
         {
             path: 'dashboard',
             element: <CheckAuth children={<DashboardLayout />} />,
@@ -50,7 +63,11 @@ export default function Router() {
         },
         {
             path: 'login',
-            element: <LoginPage />,
+            element: <IsAlreadyAuth children={<LoginPage />} />
+        },
+        {
+            path: 'register',
+            element: <IsAlreadyAuth children={<RegisterPage />} />
         },
         {
             element: <SimpleLayout />,

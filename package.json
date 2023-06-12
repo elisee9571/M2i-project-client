@@ -18,6 +18,7 @@
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "history": "^5.3.0",
+    "jest": "^27.5.1",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
@@ -66,5 +67,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.4",
+    "@babel/preset-react": "^7.22.3",
+    "babel-jest": "^29.5.0",
+    "babel-loader": "^9.1.2"
   }
 }

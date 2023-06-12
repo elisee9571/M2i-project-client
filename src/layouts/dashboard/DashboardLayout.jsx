@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 
 import Header from './header/Header';

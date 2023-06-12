@@ -347,7 +347,6 @@ export default function CategoryListPage() {
                                     rowCount={data.length}
                                 />
                                 <TableBody>
-
                                     {stableSort(data, getComparator(order, orderBy))
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((category) => {

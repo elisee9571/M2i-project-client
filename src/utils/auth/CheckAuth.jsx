@@ -1,7 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 
-export default function CheckAuth({ children }) {
+
+export function CheckAuth({ children }) {
     const token = localStorage.getItem('TOKEN');
 
     if (token) {
@@ -15,5 +16,25 @@ export default function CheckAuth({ children }) {
     } else {
         return <Navigate to="/login" />;
     }
+}
 
+export function IsAlreadyAuth({ children }) {
+    const token = localStorage.getItem('TOKEN');
+
+    if (token) {
+        return <Navigate to="/" />;
+    } else {
+        return children;
+    }
+}
+
+export function IsAuth() {
+    const token = localStorage.getItem('TOKEN');
+
+    if (token) {
+        const { sub } = jwt_decode(token);
+        return sub;
+    }
+
+    return null;
 }

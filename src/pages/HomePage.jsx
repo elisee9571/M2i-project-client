@@ -25,9 +25,6 @@ export default function LoginPage() {
 
     return (
         <>
-            <Helmet>
-                <title>Accueil</title>
-            </Helmet>
             <Typography variant="h1">Home page</Typography>
         </>
     )

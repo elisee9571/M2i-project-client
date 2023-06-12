@@ -7,9 +7,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Router from './routes';
 
 export default function App() {
-  const lang = createTheme(
-    frFR,
-  );
+  const lang = createTheme(frFR);
+
   return (
     <HelmetProvider>
       <BrowserRouter>

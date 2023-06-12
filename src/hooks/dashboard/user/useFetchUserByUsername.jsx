@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import isAuth from '../../../utils/auth/isAuth';
+import { IsAuth } from '../../../utils/auth/CheckAuth';
 
 const useFetchUserByUsername = () => {
     const [data, setData] = useState([]);
 
-    const username = isAuth();
+    const username = IsAuth();
 
     useEffect(() => {
         axios.get(`http://localhost:8081/api/v1/users/${username}`)
