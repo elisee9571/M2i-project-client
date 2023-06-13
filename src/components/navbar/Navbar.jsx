@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
     AppBar,
@@ -10,7 +10,6 @@ import {
     IconButton,
     MenuItem,
     Menu,
-    Badge,
     Divider,
     Button,
     Link,
@@ -30,6 +29,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+
+import axios from 'axios';
 
 import Logo from '../../components/logo/Logo';
 
@@ -69,6 +70,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function Navbar() {
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
@@ -233,6 +235,37 @@ export default function Navbar() {
         </Box>
     );
 
+    //search
+    const [searchText, setSearchText] = useState('');
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        const queryParams = new URLSearchParams({
+            category: '',
+            keyword: searchText,
+            price: 'priceASC',
+            page: '0',
+            size: '9',
+        });
+
+        const url = `${process.env.REACT_APP_API_URL}/products/search?${queryParams.toString()}`;
+
+        axios
+            .get(url)
+            .then((res) => {
+                const searchUrl = `/products?${queryParams.toString()}`;
+                navigate(searchUrl);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
+
+    const handleInputChange = (event) => {
+        setSearchText(event.target.value);
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ background: "white", boxShadow: 0 }}>
@@ -245,18 +278,22 @@ export default function Navbar() {
                         m: 1,
                         display: { xs: 'none', sm: 'flex' }
                     }}>
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Rechercher..."
-                                inputProps={{ 'aria-label': 'search' }}
-                                sx={{
-                                    width: '40vw'
-                                }}
-                            />
-                        </Search>
+                        <form onSubmit={handleSearch}>
+                            <Search>
+                                <SearchIconWrapper>
+                                    <SearchIcon />
+                                </SearchIconWrapper>
+                                <StyledInputBase
+                                    placeholder="Rechercher..."
+                                    inputProps={{ 'aria-label': 'search' }}
+                                    value={searchText}
+                                    onChange={handleInputChange}
+                                    sx={{
+                                        width: '40vw'
+                                    }}
+                                />
+                            </Search>
+                        </form>
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

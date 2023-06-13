@@ -5,7 +5,7 @@ const useFetchCategories = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/api/v1/categories')
+        axios.get(`${process.env.REACT_APP_API_URL}/categories`)
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);

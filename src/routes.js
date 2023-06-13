@@ -18,6 +18,9 @@ import ProductListPage from './pages/dashboard/product/ProductListPage';
 import HomePage from './pages/HomePage';
 import DashboardAppPage from './pages/DashboardAppPage';
 
+// products
+import ProductsPage from './pages/products/ProductsPage';
+
 // auth page
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -32,7 +35,8 @@ export default function Router() {
         {
             element: <Layout />,
             children: [
-                { path: '/', element: <HomePage /> }
+                { path: '/', element: <HomePage /> },
+                { path: '/products', element: <ProductsPage /> },
             ]
         },
         {

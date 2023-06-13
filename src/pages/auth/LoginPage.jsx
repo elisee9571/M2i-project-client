@@ -40,7 +40,7 @@ export default function LoginPage() {
     const onSubmit = (data, e) => {
         e.preventDefault();
 
-        axios.post(`http://localhost:8081/api/v1/auth/login`, {
+        axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
             email: data.email,
             password: data.password
         }).then(res => {

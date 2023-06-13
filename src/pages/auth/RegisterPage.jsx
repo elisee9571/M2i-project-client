@@ -40,7 +40,7 @@ export default function RegisterPage() {
     const onSubmit = (data, e) => {
         e.preventDefault();
 
-        axios.post(`http://localhost:8081/api/v1/auth/register`, {
+        axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, {
             firstName: data.firstname,
             lastName: data.lastname,
             pseudo: data.pseudo,

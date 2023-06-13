@@ -8,7 +8,7 @@ const useFetchUserByUsername = () => {
     const username = IsAuth();
 
     useEffect(() => {
-        axios.get(`http://localhost:8081/api/v1/users/${username}`)
+        axios.get(`${process.env.REACT_APP_API_URL}/users/${username}`)
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);

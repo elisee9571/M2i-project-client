@@ -5,7 +5,7 @@ const useFetchProducts = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/api/v1/products')
+        axios.get(`${process.env.REACT_APP_API_URL}/products?page=0&size=1000`)
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);
