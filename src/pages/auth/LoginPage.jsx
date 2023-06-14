@@ -17,14 +17,17 @@ import {
     Visibility
 } from '@mui/icons-material';
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useForm } from "react-hook-form";
 import axios from "axios"
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import SnackbarAlert from "../../components/snackbar-alert/SnackbarAlert";
+import { UserContext } from "../../utils/UserContext";
 
 export default function LoginPage() {
+    const { updateUser } = useContext(UserContext);
+
     const navigate = useNavigate();
     const [snackbarProps, setSnackbarProps] = useState({
         message: "",
@@ -44,9 +47,18 @@ export default function LoginPage() {
             email: data.email,
             password: data.password
         }).then(res => {
-            localStorage.setItem('TOKEN', res.data);
+            const { roles } = jwt_decode(res.data.token);
 
-            const { roles } = jwt_decode(res.data)
+            const userData = {
+                id: res.data.user.user.id,
+                pseudo: res.data.user.user.pseudo,
+                email: res.data.user.user.email,
+                roles,
+                token: res.data.token
+            }
+
+            updateUser(userData);
+            localStorage.setItem('USER', JSON.stringify(userData));
 
             if (roles === 'ROLE_ADMIN') {
                 navigate("/dashboard/app")

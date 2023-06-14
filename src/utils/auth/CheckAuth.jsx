@@ -3,10 +3,10 @@ import jwt_decode from 'jwt-decode';
 
 
 export function CheckAuth({ children }) {
-    const token = localStorage.getItem('TOKEN');
+    const user = JSON.parse(localStorage.getItem('USER'))
 
-    if (token) {
-        const { roles } = jwt_decode(token);
+    if (user) {
+        const { roles } = jwt_decode(user.token);
 
         if (roles === 'ROLE_ADMIN') {
             return children;
@@ -19,9 +19,9 @@ export function CheckAuth({ children }) {
 }
 
 export function IsAlreadyAuth({ children }) {
-    const token = localStorage.getItem('TOKEN');
+    const user = JSON.parse(localStorage.getItem('USER'))
 
-    if (token) {
+    if (user) {
         return <Navigate to="/" />;
     } else {
         return children;
@@ -29,10 +29,10 @@ export function IsAlreadyAuth({ children }) {
 }
 
 export function IsAuth() {
-    const token = localStorage.getItem('TOKEN');
+    const user = JSON.parse(localStorage.getItem('USER'))
 
-    if (token) {
-        const { sub } = jwt_decode(token);
+    if (user) {
+        const { sub } = jwt_decode(user.token);
         return sub;
     }
 

@@ -1,22 +1,37 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import CardProduct from '../../components/card/CardProduct';
-import { Box, Container, Pagination, Typography, Paper } from '@mui/material';
+import {
+    Box, Container, Pagination, Typography,
+    FormControl, InputLabel, Select, MenuItem, Divider
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductsPage() {
     const location = new URL(window.location.href);
     const searchParams = new URLSearchParams(location.search);
+    const navigate = useNavigate();
 
     const [products, setProducts] = useState([])
     const [page, setPage] = useState(0);
+    const [category, setCategory] = useState(searchParams.get('category'));
+    const [categories, setCategories] = useState([]);
+    const [price, setPrice] = useState(searchParams.get('price'));
 
     useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_API_URL}/categories`)
+            .then(res => {
+                setCategories(res.data);
+                console.log(res.data)
+            });
+
         const fetchData = async () => {
             const queryParams = new URLSearchParams({
-                category: searchParams.get('category'),
+                category: category,
                 keyword: searchParams.get('keyword'),
-                price: searchParams.get('price'),
-                page,
+                price: price,
+                page: page,
                 size: searchParams.get('size'),
             });
 
@@ -25,17 +40,51 @@ export default function ProductsPage() {
             try {
                 const response = await axios.get(url);
                 setProducts(response.data);
-                console.log(response.data);
             } catch (error) {
                 console.error(error);
             }
         };
 
         fetchData();
-    }, [location.search, page]);
+    }, [location.search, page, category, price]);
 
-    const handleChange = (event, value) => {
+    const handleChangePage = (event, value) => {
         setPage(value);
+        const queryParams = new URLSearchParams({
+            category: category,
+            keyword: searchParams.get('keyword'),
+            price: price,
+            page: value,
+            size: searchParams.get('size'),
+        });
+        const newUrl = `/products?${queryParams.toString()}`;
+        navigate(newUrl);
+    };
+
+    const handleChangePrice = (event) => {
+        setPrice(event.target.value);
+        const queryParams = new URLSearchParams({
+            category: category,
+            keyword: searchParams.get('keyword'),
+            price: event.target.value,
+            page: page,
+            size: searchParams.get('size'),
+        });
+        const newUrl = `/products?${queryParams.toString()}`;
+        navigate(newUrl);
+    };
+
+    const handleChangeCategory = (event) => {
+        setCategory(event.target.value);
+        const queryParams = new URLSearchParams({
+            category: event.target.value,
+            keyword: searchParams.get('keyword'),
+            price: price,
+            page: page,
+            size: searchParams.get('size'),
+        });
+        const newUrl = `/products?${queryParams.toString()}`;
+        navigate(newUrl);
     };
 
     return (
@@ -43,8 +92,63 @@ export default function ProductsPage() {
             py: 5,
             minHeight: "100vh"
         }}>
-            <Typography variant='body1'>Résultats de la recherche pour</Typography>
-            <Typography variant='h5'>{searchParams.get("keyword") ? searchParams.get("keyword") : ""}({products.length})</Typography>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+            }}>
+                <Box sx={{
+                    py: 2
+                }}>
+                    <Typography variant='body1'>Résultats de la recherche pour</Typography>
+                    <Typography variant='h5'>{searchParams.get("keyword") ? searchParams.get("keyword") : ""}({products.length})</Typography>
+                </Box>
+                <Divider />
+                <Box sx={{
+                    display: 'flex',
+                    flexWrap: "wrap",
+                    justifyContent: 'start',
+                    gap: '20px',
+                    py: 2
+                }}>
+                    <FormControl sx={{
+                        minWidth: 150
+                    }}>
+                        <InputLabel htmlFor="select-category">Catégorie</InputLabel>
+                        <Select
+                            native
+                            defaultValue=""
+                            id="select-category"
+                            value={category}
+                            label="Catégorie"
+                            onChange={handleChangeCategory}
+                        >
+                            <option aria-label="None" value="" />
+                            {categories.map(category => (
+                                <option key={category.id} value={category.id}>
+                                    {category.title}
+                                </option>
+                            ))}
+
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{
+                        minWidth: 150
+                    }}>
+                        <InputLabel id="select-label-trie">Trier par</InputLabel>
+                        <Select
+                            labelId="select-label-trie"
+                            id="select-trie"
+                            value={price}
+                            label="Trier par"
+                            onChange={handleChangePrice}
+                        >
+                            <MenuItem value={"priceDESC"}>Prix décroissant</MenuItem>
+                            <MenuItem value={"priceASC"}>Prix croissant</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
+            </Box>
             {products.length > 0 ?
                 <>
                     <Box sx={{
@@ -65,7 +169,7 @@ export default function ProductsPage() {
                         display: 'flex',
                         justifyContent: 'center',
                     }}>
-                        <Pagination count={5} page={page} onChange={handleChange} />
+                        <Pagination count={5} page={page} onChange={handleChangePage} />
                     </Box>
                 </>
                 :

@@ -25,8 +25,8 @@ export default function HomePage() {
     const { data } = useProductsHome();
 
     return (
-        <Container sx={{
-            pt: 5,
+        <Container maxWidth="xl" sx={{
+            pt: 2,
             display: 'flex',
             flexDirection: "column",
             justifyContent: 'center',
@@ -64,41 +64,48 @@ export default function HomePage() {
                     </Toolbar>
                 </AppBar>
             </Box>
-
-            <Typography variant="h4">Fil d'actualité</Typography>
-            <Box sx={{
+            <Container sx={{
                 display: 'flex',
-                flexWrap: 'wrap',
+                flexDirection: "column",
                 justifyContent: 'center',
-                gap: '20px',
-                py: 5
+                alignItems: "start",
             }}>
-                {data.map((p) => (
-                    <CardProduct
-                        key={p.id}
-                        product={p}
-                    />
-                ))}
-            </Box>
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}>
-                <Link component={RouterLink} to={`/products?${queryParams.toString()}`} underline="none" sx={{
-                    m: 1
+                <Typography variant="h4">Fil d'actualité</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    gap: '20px',
+                    py: 5
                 }}>
-                    <Button variant="solid"
-                        sx={{
-                            color: "white",
-                            background: "black",
-                            '&:hover': {
-                                background: "#00000099",
-                            },
-                        }}>
-                        Voir plus
-                    </Button>
-                </Link>
-            </Box>
+                    {data.map((p) => (
+                        <CardProduct
+                            key={p.id}
+                            product={p}
+                        />
+                    ))}
+                </Box>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: "100%"
+                }}>
+                    <Link component={RouterLink} to={`/products?${queryParams.toString()}`} underline="none" sx={{
+                        m: 1
+                    }}>
+                        <Button variant="solid"
+                            sx={{
+                                color: "white",
+                                background: "black",
+                                '&:hover': {
+                                    background: "#00000099",
+                                },
+                            }}>
+                            Voir plus
+                        </Button>
+                    </Link>
+                </Box>
+            </Container>
         </Container>
     )
 }

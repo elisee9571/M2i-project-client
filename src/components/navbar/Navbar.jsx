@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
@@ -33,6 +33,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import axios from 'axios';
 
 import Logo from '../../components/logo/Logo';
+import { UserContext } from '../../utils/UserContext';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -70,6 +71,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function Navbar() {
+    const { user, logoutUser } = useContext(UserContext);
+
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -93,7 +96,6 @@ export default function Navbar() {
         setAnchorEl(null);
         handleMobileMenuClose();
     };
-
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -125,7 +127,10 @@ export default function Navbar() {
                 </ListItemIcon>
                 Settings
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                logout();
+            }}>
                 <ListItemIcon>
                     <LogoutIcon fontSize="medium" />
                 </ListItemIcon>
@@ -152,65 +157,71 @@ export default function Navbar() {
                 }
             }}
             role="presentation"
-            onKeyDown={toggleDrawer(anchor, false)}
         >
-            <Box>
-                <Link component={RouterLink} to="/register" underline="none" fullWidth sx={{
-                    m: 1,
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}>
-                    <Button variant="outlined"
-                        sx={{
-                            width: "100%",
-                            color: "black",
-                            borderColor: "black",
-                            '&:hover': {
-                                background: "#00000010",
-                                borderColor: "black",
-                            },
+            {!user &&
+                <>
+                    <Box>
+                        <Link component={RouterLink} to="/register" underline="none" fullWidth sx={{
+                            m: 1,
+                            display: 'flex',
+                            justifyContent: 'center'
                         }}>
-                        S'inscrire
-                    </Button>
-                </Link>
-                <Link component={RouterLink} to="/login" underline="none" sx={{
-                    m: 1,
-                    display: 'flex',
-                    justifyContent: 'center'
-                }}>
-                    <Button variant="solid"
-                        sx={{
-                            width: "100%",
-                            color: "white",
-                            background: "black",
-                            '&:hover': {
-                                background: "#00000099",
-                            },
+                            <Button variant="outlined"
+                                sx={{
+                                    width: "100%",
+                                    color: "black",
+                                    borderColor: "black",
+                                    '&:hover': {
+                                        background: "#00000010",
+                                        borderColor: "black",
+                                    },
+                                }}>
+                                S'inscrire
+                            </Button>
+                        </Link>
+                        <Link component={RouterLink} to="/login" underline="none" sx={{
+                            m: 1,
+                            display: 'flex',
+                            justifyContent: 'center'
                         }}>
-                        Se connecter
-                    </Button>
-                </Link>
-            </Box>
-            <Divider />
+                            <Button variant="solid"
+                                sx={{
+                                    width: "100%",
+                                    color: "white",
+                                    background: "black",
+                                    '&:hover': {
+                                        background: "#00000099",
+                                    },
+                                }}>
+                                Se connecter
+                            </Button>
+                        </Link>
+                    </Box>
+                    <Divider />
+                </>
+            }
             <Box sx={{
                 m: 1,
                 display: 'flex',
                 justifyContent: 'center',
                 display: { xs: 'flex', sm: 'none' }
             }}>
-                <Search>
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        fullWidth
-                        placeholder="Rechercher..."
-                        inputProps={{ 'aria-label': 'search' }}
-                        sx={{
-                            width: "72vw",
-                        }}
-                    />
-                </Search>
+                <form onSubmit={handleSearch}>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Rechercher..."
+                            inputProps={{ 'aria-label': 'search' }}
+                            value={searchText}
+                            onChange={handleInputChange}
+                            sx={{
+                                width: '72vw'
+                            }}
+                        />
+                    </Search>
+                </form>
             </Box>
             <Divider />
             <Typography variant='body1' sx={{
@@ -266,6 +277,11 @@ export default function Navbar() {
         setSearchText(event.target.value);
     };
 
+    const logout = () => {
+        logoutUser()
+        navigate("/");
+    }
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ background: "white", boxShadow: 0 }}>
@@ -296,49 +312,67 @@ export default function Navbar() {
                         </form>
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <Link component={RouterLink} to="/register" underline="none" sx={{
-                            m: 1
-                        }}>
-                            <Button variant="outlined"
-                                sx={{
-                                    color: "black",
-                                    borderColor: "black",
-                                    '&:hover': {
-                                        background: "#00000010",
+                    {!user &&
+                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                            <Link component={RouterLink} to="/register" underline="none" sx={{
+                                m: 1
+                            }}>
+                                <Button variant="outlined"
+                                    sx={{
+                                        color: "black",
                                         borderColor: "black",
-                                    },
-                                }}>
-                                S'inscrire
-                            </Button>
-                        </Link>
-                        <Link component={RouterLink} to="/login" underline="none" sx={{
-                            m: 1
-                        }}>
-                            <Button variant="solid"
-                                sx={{
-                                    color: "white",
-                                    background: "black",
-                                    '&:hover': {
-                                        background: "#00000099",
-                                    },
-                                }}>
-                                Se connecter
-                            </Button>
-                        </Link>
-                    </Box>
-                    <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="black"
-                        >
-                            <PersonOutlineOutlinedIcon />
-                        </IconButton>
-                    </Box>
+                                        '&:hover': {
+                                            background: "#00000010",
+                                            borderColor: "black",
+                                        },
+                                    }}>
+                                    S'inscrire
+                                </Button>
+                            </Link>
+                            <Link component={RouterLink} to="/login" underline="none" sx={{
+                                m: 1
+                            }}>
+                                <Button variant="solid"
+                                    sx={{
+                                        color: "white",
+                                        background: "black",
+                                        '&:hover': {
+                                            background: "#00000099",
+                                        },
+                                    }}>
+                                    Se connecter
+                                </Button>
+                            </Link>
+                        </Box>
+                    }
+                    {user &&
+                        <>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                                <IconButton
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
+                                    color="black"
+                                >
+                                    <PersonOutlineOutlinedIcon />
+                                </IconButton>
+                            </Box>
+                            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                                <IconButton
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
+                                    color="black"
+                                >
+                                    <PersonOutlineOutlinedIcon />
+                                </IconButton>
+                            </Box>
+                        </>
+                    }
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
