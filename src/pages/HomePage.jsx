@@ -21,18 +21,6 @@ import { styled } from "@mui/material/styles";
 import Logo from "../components/logo/Logo";
 // import Image from "/assets/images/bg-login.png";
 
-const StyledImg = styled("div")(({ theme }) => ({
-    top: 0,
-    left: 0,
-    lineHeight: 0,
-    width: "100%",
-    position: "absolute",
-    padding: theme.spacing(3, 3, 0),
-    [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(5, 5, 0),
-  },
-}));
-
 const StyledHeader = styled("header")(({ theme }) => ({
   top: 0,
   left: 0,
@@ -43,6 +31,19 @@ const StyledHeader = styled("header")(({ theme }) => ({
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(5, 5, 0),
   },
+}));
+
+const StyledImg = styled("div")(({ theme }) => ({
+  margin: "auto",
+  lineHeight: 0,
+  width: "100vh",
+  height: "100vh",
+  justifyContent: "center",
+  position: "absolute",
+  padding: theme.spacing(3, 3, 0),
+  [theme.breakpoints.up("sm")]: {
+  padding: theme.spacing(5, 5, 0),
+},
 }));
 
 const StyledContent = styled("div")(({ theme }) => ({
@@ -66,23 +67,20 @@ export default function LoginPage() {
         <StyledHeader>
           <Logo />
         </StyledHeader>
-
-        {/* <StyledImg sx={{ backgroundImage:`url("/assets/images/bg-login.png")`}}>
-            
-        <Typography variant="<p>">Texte a mettre sur l'image</Typography>
-
-        </StyledImg> */}
+        <StyledImg sx={{ zIndex: 0,backgroundImage:`url("/assets/images/bg-login.png")`}}>  
+          <Typography variant="<p style='color:white'>">Texte a mettre sur l'image</Typography>
+        </StyledImg>
 
         <StyledImg>
           <Box
             component="img"
             src="/assets/images/bg-login.png"
-            sx={{ height: 360, width: 1000, borderRadius: 2 }}
+            sx={{ zIndex:1, height: 360, width: 1000, borderRadius: 2 }}
           />
           <Typography variant="<p>">Texte a mettre sur l'image</Typography>
         </StyledImg>
 
-        <StyledContent>
+        <StyledContent  sx={{ zIndex: 2 }} >
           <Typography variant="h2">Fil d'actualité</Typography>
         </StyledContent>
 
