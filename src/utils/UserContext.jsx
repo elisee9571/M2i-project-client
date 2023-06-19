@@ -1,5 +1,4 @@
 import { createContext, useState, useEffect } from 'react';
-import { SnackbarProvider, useSnackbar } from 'notistack';
 import SnackbarAlert from '../components/snackbar-alert/SnackbarAlert';
 
 export const UserContext = createContext();

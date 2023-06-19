@@ -10,19 +10,19 @@ export default function CardOffer({ offer, user }) {
                 return {
                     label: "REJETÉE",
                     bgcolor: "#ffa199",
-                    border: "1px solid #f44336"
+                    color: "#aa2e25"
                 };
             case "ACCEPTED":
                 return {
                     label: "ACCEPTÉE",
                     bgcolor: "#d6ffa6",
-                    border: "1px solid #8bc34a"
+                    color: "#618833"
                 };
             case "PENDING":
                 return {
                     label: "EN ATTENTE",
                     bgcolor: "#ffffa3",
-                    border: "1px solid #ffeb3b"
+                    color: "#b28704"
                 };
             default:
                 return null;
@@ -77,7 +77,7 @@ export default function CardOffer({ offer, user }) {
                             label={getStatusLabel(offer.status)?.label}
                             sx={{
                                 bgcolor: getStatusLabel(offer.status)?.bgcolor,
-                                border: getStatusLabel(offer.status)?.border,
+                                color: getStatusLabel(offer.status)?.color,
                                 fontWeight: "bold",
                                 position: 'absolute',
                                 top: "10px",

@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Container, Divider, FormControl, FormHelperText, InputAdornment, InputLabel, OutlinedInput, Paper, Typography } from '@mui/material';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { fCurrency } from '../../utils/formatNumber';
 import { fDate } from '../../utils/formatTime';
 import {
@@ -8,8 +8,11 @@ import {
 } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import CardOffer from '../../components/card/CardOffer';
+import { UserContext } from '../../utils/UserContext';
 
 export default function OffersPages({ user }) {
+    const { showNotification } = useContext(UserContext);
+
     const location = new URL(window.location.href);
     const searchParams = new URLSearchParams(location.search);
 
@@ -26,7 +29,9 @@ export default function OffersPages({ user }) {
                 .then(res => {
                     // console.log("product", res.data)
                     setProduct(res.data);
-                }).catch(err => console.error(err));
+                }).catch(err => {
+                    console.error(err)
+                });
         }
 
         const fetchOffers = async () => {
@@ -45,7 +50,9 @@ export default function OffersPages({ user }) {
                         .then(res => {
                             // console.log("offers", res.data)
                             setOffers(res.data);
-                        }).catch(err => console.error(err));
+                        }).catch(err => {
+                            console.error(err);
+                        });
 
                 } catch (error) {
                     console.error(error);
@@ -78,8 +85,12 @@ export default function OffersPages({ user }) {
 
                 await axios.request(config)
                     .then(res => {
-                        console.log(res.data)
-                    }).catch(err => console.error(err));
+                        console.log(res.data);
+                        showNotification(res.data, "success");
+                    }).catch(err => {
+                        console.error(err);
+                        showNotification(err.response.data, "error");
+                    });
 
             } catch (error) {
                 console.error(error);
@@ -221,7 +232,6 @@ export default function OffersPages({ user }) {
                                     </FormHelperText>
                                 </FormControl>
                                 <Button
-                                    fullWidth
                                     type='submit'
                                     sx={{
                                         py: 1.5,

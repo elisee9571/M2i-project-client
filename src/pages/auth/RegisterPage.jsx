@@ -171,16 +171,18 @@ export default function RegisterPage() {
                             />
                             <FormHelperText error={Boolean(errors.password)}>{(errors.password && "Mot de passe requis et doit être superieur à 4 caracteres.") || (passwordValue.length > 1 && "Ne partagez votre mot de passe avec personne.")}</FormHelperText>
                         </FormControl>
-                        <Button fullWidth type='submit' sx={{
-                            py: 1.5,
-                            borderRadius: 1.5,
-                            fontWeight: 700,
-                            background: "black",
-                            color: "white",
-                            '&:hover': {
-                                background: "#00000099"
-                            }
-                        }}>S'inscrire</Button>
+                        <Button
+                            fullWidth
+                            type='submit' sx={{
+                                py: 1.5,
+                                borderRadius: 1.5,
+                                fontWeight: 700,
+                                background: "black",
+                                color: "white",
+                                '&:hover': {
+                                    background: "#00000099"
+                                }
+                            }}>S'inscrire</Button>
 
                         <Box sx={{
                             display: "flex",
