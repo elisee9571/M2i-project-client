@@ -153,7 +153,7 @@ export default function UserNewPage() {
                         Crée un utilisateur
                     </Typography>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/">
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
                             Dashboard
                         </Link>
                         <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/user/list">

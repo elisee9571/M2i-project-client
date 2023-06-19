@@ -25,7 +25,7 @@ const StyledAccount = styled('div')(({ theme }) => ({
     backgroundColor: alpha(theme.palette.grey[500], 0.12),
 }));
 
-export default function Nav({ openNav, onCloseNav, data }) {
+export default function Nav({ openNav, onCloseNav, user }) {
     const { pathname } = useLocation();
 
     const isDesktop = useResponsive('up', 'lg');
@@ -58,13 +58,17 @@ export default function Nav({ openNav, onCloseNav, data }) {
                         <Avatar src={account.photoURL} alt="photoURL" />
 
                         <Box sx={{ ml: 2 }}>
-                            <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                                {data.firstName} {data.lastName}
-                            </Typography>
+                            {user &&
+                                <>
+                                    <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                                        {user.firstname} {user.lastname}
+                                    </Typography>
 
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                {data.role}
-                            </Typography>
+                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                        {user.roles}
+                                    </Typography>
+                                </>
+                            }
                         </Box>
                     </StyledAccount>
                 </Link>

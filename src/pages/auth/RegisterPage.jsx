@@ -17,19 +17,17 @@ import {
     Visibility
 } from '@mui/icons-material';
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import SnackbarAlert from "../../components/snackbar-alert/SnackbarAlert";
+import { UserContext } from "../../utils/UserContext";
 
 export default function RegisterPage() {
+    const { showNotification } = useContext(UserContext);
+
     const navigate = useNavigate();
-    const [snackbarProps, setSnackbarProps] = useState({
-        message: "",
-        type: "",
-        isOpen: ""
-    });
     const [showPassword, setShowPassword] = useState(false);
     const [passwordValue, setPasswordValue] = useState("");
 
@@ -47,14 +45,14 @@ export default function RegisterPage() {
             email: data.email,
             password: data.password
         }).then(res => {
-            setSnackbarProps({ message: res.data, type: 'success' });
+            showNotification(res.data, 'success');
 
             setTimeout(() => {
                 navigate('/login');
             }, 3000);
 
         }).catch(err => {
-            setSnackbarProps({ message: err.response.data, type: 'error' });
+            showNotification(err.response.data, 'error');
         })
     };
 
@@ -66,7 +64,6 @@ export default function RegisterPage() {
             <Helmet>
                 <title>Inscription</title>
             </Helmet>
-            {snackbarProps.message !== "" && <SnackbarAlert message={snackbarProps.message} type={snackbarProps.type} />}
             <Box sx={{ display: 'flex', height: '100vh' }}>
                 <Box
                     sx={{

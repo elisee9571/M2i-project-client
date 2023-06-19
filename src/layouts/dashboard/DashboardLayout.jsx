@@ -1,11 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { styled } from '@mui/material/styles';
 
 import Header from './header/Header';
 import Nav from './nav/Nav';
-
-import useFetchUserByUsername from '../../hooks/dashboard/user/useFetchUserByUsername';
+import { UserContext } from '../../utils/UserContext';
 
 
 const APP_BAR_MOBILE = 64;
@@ -29,16 +28,15 @@ const Main = styled('div')(({ theme }) => ({
 }));
 
 export default function DashboardLayout() {
+    const { user } = useContext(UserContext);
     const [open, setOpen] = useState(false);
-    const { data } = useFetchUserByUsername();
-    console.log(data)
 
     return (
         <>
             <StyledRoot>
-                <Header data={data} onOpenNav={() => setOpen(true)} />
+                <Header user={user} onOpenNav={() => setOpen(true)} />
 
-                <Nav data={data} openNav={open} onCloseNav={() => setOpen(false)} />
+                <Nav user={user} openNav={open} onCloseNav={() => setOpen(false)} />
 
                 <Main>
                     <Outlet />

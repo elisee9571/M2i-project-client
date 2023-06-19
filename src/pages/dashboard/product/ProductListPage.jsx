@@ -5,7 +5,6 @@ import {
     Box,
     Table,
     Stack,
-    Avatar,
     TableBody,
     TableCell,
     TableContainer,
@@ -287,7 +286,7 @@ export default function ProductListPage() {
                         Liste de produit
                     </Typography>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" component={RouterLink} to="/">
+                        <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
                             Dashboard
                         </Link>
                         <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/product/list">

@@ -1,121 +1,150 @@
 import React from 'react'
-// import AspectRatio from '@mui/material/AspectRatio';
-import Button from '@mui/material/Button';
-import { Card, CardMedia, Skeleton, Stack } from '@mui/material';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import {
+    Box,
+    Typography,
+    Card,
+    CardMedia,
+    Skeleton,
+    Stack,
+    CardActionArea,
+    CardContent,
+    Chip
+} from '@mui/material';
 import { fDate } from '../../utils/formatTime';
 import { fCurrency } from '../../utils/formatNumber';
-import { Box } from '@mui/material';
-import { BookmarkAdd as BookmarkAddIcon } from '@mui/icons-material';
+import { Link as RouterLink } from 'react-router-dom';
+import Bookmark from '../bookmark/Bookmark';
 
-
-export default function cardProduct(props) {
-    const { product } = props
-
+export default function cardProduct({ product }) {
     return (
         <>
             {product ? (
                 <Card sx={{
-                    width: 320,
-                    height: 400,
+                    width: {
+                        xs: 250,
+                        md: 320
+                    },
+                    height: {
+                        xs: 350,
+                        md: 400
+                    },
                     borderRadius: "15px",
+                    boxShadow: 0,
                     border: "1px solid #CCC",
+                    position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    boxShadow: 0
+                    justifyContent: 'space-between'
                 }} >
-                    <CardContent sx={{
-                        height: "40%",
-                        display: "flex",
-                        flexDirection: 'column',
-                        justifyContent: 'space-between'
-                    }}>
-
-                        <Box sx={{
-                            display: 'flex',
+                    <Bookmark product={product} />
+                    <CardActionArea to={`/products/${product.id}`} component={RouterLink}>
+                        <CardContent sx={{
+                            height: "40%",
+                            display: "flex",
+                            flexDirection: 'column',
                             justifyContent: 'space-between'
                         }}>
-                            <Typography variant="body1">
-                                {product.user.pseudo}
-                            </Typography>
-                            <IconButton>
-                                <BookmarkAddIcon />
-                            </IconButton>
-                        </Box>
-                        <div>
+
                             <Box sx={{
                                 display: 'flex',
                                 justifyContent: 'space-between'
                             }}>
-                                <Typography variant="body2">
-                                    {product.title}
-                                </Typography>
-                                <Typography variant="body2">
-                                    {fCurrency(product.price)}
-                                </Typography>
-                            </Box>
-                            <Box sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between'
-                            }}>
-                                <Typography variant="body2">
-                                    {product.category.title}
-                                </Typography>
-                                <Typography variant="body2">
-                                    {fDate(product.createdAt)}
+                                <Typography variant="h6"
+                                    sx={{ fontWeight: 300 }}
+                                >
+                                    {product.user.pseudo}
                                 </Typography>
                             </Box>
-                        </div>
-                    </CardContent>
-                    <Box sx={{
-                        display: 'flex',
-                        justifyContent: "center",
-                        m: 1,
-                        borderRadius: "15px",
-                        overflow: 'hidden',
-                    }}>
-                        <CardMedia
-                            component="img"
-                            alt={product.title}
-                            image="/assets/images/bg-register.jpg"
-                            sx={{
-                                pr: .5,
-                                width: "50%"
-                            }}
-                        />
+                            <div>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'end',
+                                    mb: 1
+                                }}>
+                                    <Typography variant="body2"
+                                        sx={{ fontWeight: "bold" }}
+                                    >
+                                        {product.title}
+                                    </Typography>
+                                    <Typography variant="body2"
+                                        sx={{ fontWeight: "bold" }}
+                                    >
+                                        {fCurrency(product.price)}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <Chip label={product.category.title} />
+                                    <Typography variant="body2">
+                                        {fDate(product.createdAt)}
+                                    </Typography>
+                                </Box>
+                            </div>
+                        </CardContent>
                         <Box sx={{
                             display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: "center"
-
+                            justifyContent: "center",
+                            m: 1,
+                            borderRadius: "15px",
+                            overflow: 'hidden',
                         }}>
                             <CardMedia
                                 component="img"
                                 alt={product.title}
                                 image="/assets/images/bg-register.jpg"
                                 sx={{
-                                    pb: .5,
-                                    width: "100%"
+                                    pr: {
+                                        xs: 0,
+                                        md: .5
+                                    },
+                                    width: {
+                                        xs: "100%",
+                                        md: "50%"
+                                    }
                                 }}
                             />
-                            <CardMedia
-                                component="img"
-                                alt={product.title}
-                                image="/assets/images/bg-register.jpg"
-                                sx={{
-                                    width: "100%"
-                                }}
-                            />
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: "center",
+                                display: { xs: "none", md: "block" }
+
+                            }}>
+                                <CardMedia
+                                    component="img"
+                                    alt={product.title}
+                                    image="/assets/images/bg-register.jpg"
+                                    sx={{
+                                        pb: .5,
+                                        width: "100%"
+                                    }}
+                                />
+                                <CardMedia
+                                    component="img"
+                                    alt={product.title}
+                                    image="/assets/images/bg-register.jpg"
+                                    sx={{
+                                        width: "100%"
+                                    }}
+                                />
+                            </Box>
                         </Box>
-                    </Box>
+                    </CardActionArea>
                 </Card >
             ) : (
                 <Stack spacing={1} sx={{
-                    width: 320,
-                    height: 400,
+                    width: {
+                        xs: 250,
+                        md: 320
+                    },
+                    height: {
+                        xs: 350,
+                        md: 400
+                    },
                     mt: 2
                 }}>
                     <Box sx={{

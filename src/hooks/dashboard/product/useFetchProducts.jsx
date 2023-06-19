@@ -5,8 +5,10 @@ const useFetchProducts = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_API_URL}/products?page=0&size=1000`)
-            .then(res => setData(res.data))
+        axios.get(`${process.env.REACT_APP_API_URL}/products?page=1&size=1000`)
+            .then(res => {
+                setData(res.data.products);
+            })
             .catch(err => console.error(err));
     }, []);
 

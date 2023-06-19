@@ -20,7 +20,7 @@ const MENU_OPTIONS = [
     },
 ];
 
-export default function AccountPopover({ data }) {
+export default function AccountPopover({ user }) {
     const [open, setOpen] = useState(null);
 
     const handleOpen = (event) => {
@@ -74,12 +74,16 @@ export default function AccountPopover({ data }) {
                 }}
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
-                    <Typography variant="subtitle2" noWrap>
-                        {data.firstName} {data.lastName}
-                    </Typography>
-                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }} noWrap>
-                        {data.email}
-                    </Typography>
+                    {user &&
+                        <>
+                            <Typography variant="subtitle2" noWrap>
+                                {user.firstname} {user.lastname}
+                            </Typography>
+                            <Typography variant="subtitle2" sx={{ color: 'text.secondary' }} noWrap>
+                                {user.email}
+                            </Typography>
+                        </>
+                    }
                 </Box>
 
                 <Divider sx={{ borderStyle: 'dashed' }} />

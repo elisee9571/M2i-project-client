@@ -8,7 +8,13 @@ export function fDate(date, newFormat) {
 }
 
 export function fDateTime(date, newFormat) {
-    const fm = newFormat || 'dd MMM yyyy p';
+    const fm = newFormat || "'Le' d MMMM yyyy 'à' HH'h'mm";
+
+    return date ? format(new Date(date), fm, { locale: fr }) : '';
+}
+
+export function fDateMonth(date, newFormat) {
+    const fm = newFormat || "'depuis' MMMM yyyy";
 
     return date ? format(new Date(date), fm, { locale: fr }) : '';
 }

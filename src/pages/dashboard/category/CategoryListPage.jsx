@@ -41,7 +41,7 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import { Helmet } from 'react-helmet-async';
 
-import useFetchCategories from '../../../hooks/dashboard/category/useFetchCategories';
+import useFetchCategories from '../../../hooks/category/useFetchCategories';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -290,7 +290,7 @@ export default function CategoryListPage() {
                             Liste de catégorie
                         </Typography>
                         <Breadcrumbs aria-label="breadcrumb">
-                            <Link underline="hover" color="inherit" component={RouterLink} to="/">
+                            <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard">
                                 Dashboard
                             </Link>
                             <Link underline="hover" color="inherit" component={RouterLink} to="/dashboard/category/list">

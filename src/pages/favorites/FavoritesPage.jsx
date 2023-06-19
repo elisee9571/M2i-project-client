@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
     Box, Container, Pagination, Typography,
     FormControl, InputLabel, Select, MenuItem, Divider
@@ -7,13 +7,16 @@ import {
 import { useNavigate } from 'react-router-dom';
 import CardProduct from '../../components/card/CardProduct';
 import useFetchCategories from '../../hooks/category/useFetchCategories';
+import { UserContext } from '../../utils/UserContext';
 
-export default function ProductsPage() {
+export default function FavoritesPage() {
+    const { user } = useContext(UserContext);
+
     const location = new URL(window.location.href);
     const searchParams = new URLSearchParams(location.search);
     const navigate = useNavigate();
 
-    const [products, setProducts] = useState([]);
+    const [favorites, setFavorites] = useState([])
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
@@ -33,23 +36,33 @@ export default function ProductsPage() {
         };
 
         const fetchData = async () => {
-            const queryParams = new URLSearchParams({
-                category: category,
-                keyword: searchParams.get('keyword'),
-                price: price,
-                page: page,
-                size: searchParams.get('size'),
-            });
+            if (user) {
+                const queryParams = new URLSearchParams({
+                    category: category,
+                    price: price,
+                    page: page,
+                    size: searchParams.get('size'),
+                });
 
-            const url = `${process.env.REACT_APP_API_URL}/products/search?${queryParams.toString()}`;
+                const url = `${process.env.REACT_APP_API_URL}/favorites?${queryParams.toString()}`;
 
-            try {
-                const res = await axios.get(url);
-                setProducts(res.data.products);
-                setTotalPages(res.data.totalPages);
-                setTotalProducts(res.data.totalProducts);
-            } catch (error) {
-                console.error(error);
+                const config = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: url,
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                };
+
+                try {
+                    const res = await axios.request(config);
+                    setFavorites(res.data.favorites);
+                    setTotalPages(res.data.totalPages);
+                    setTotalProducts(res.data.totalProducts);
+                } catch (error) {
+                    console.error(error);
+                }
             }
         };
 
@@ -61,12 +74,11 @@ export default function ProductsPage() {
         setPage(value);
         const queryParams = new URLSearchParams({
             category: category,
-            keyword: searchParams.get('keyword'),
             price: price,
             page: value,
             size: searchParams.get('size'),
         });
-        const newUrl = `/products/search?${queryParams.toString()}`;
+        const newUrl = `/favorites?${queryParams.toString()}`;
         navigate(newUrl);
     };
 
@@ -74,12 +86,11 @@ export default function ProductsPage() {
         setPrice(event.target.value);
         const queryParams = new URLSearchParams({
             category: category,
-            keyword: searchParams.get('keyword'),
             price: event.target.value,
             page: page,
             size: searchParams.get('size'),
         });
-        const newUrl = `/products/search?${queryParams.toString()}`;
+        const newUrl = `/favorites?${queryParams.toString()}`;
         navigate(newUrl);
     };
 
@@ -87,12 +98,11 @@ export default function ProductsPage() {
         setCategory(event.target.value);
         const queryParams = new URLSearchParams({
             category: event.target.value,
-            keyword: searchParams.get('keyword'),
             price: price,
             page: page,
             size: searchParams.get('size'),
         });
-        const newUrl = `/products/search?${queryParams.toString()}`;
+        const newUrl = `/favorites?${queryParams.toString()}`;
         navigate(newUrl);
     };
 
@@ -109,8 +119,7 @@ export default function ProductsPage() {
                 <Box sx={{
                     py: 2
                 }}>
-                    <Typography variant='body1'>Résultats de la recherche pour</Typography>
-                    <Typography variant='h5'>{searchParams.get("keyword") ? searchParams.get("keyword") : ""}({totalProducts})</Typography>
+                    <Typography variant='h5'>Favoris ({totalProducts})</Typography>
                 </Box>
                 <Divider />
                 <Box sx={{
@@ -137,7 +146,6 @@ export default function ProductsPage() {
                                     {category.title}
                                 </MenuItem>
                             ))}
-
                         </Select>
                     </FormControl>
                     <FormControl sx={{
@@ -157,7 +165,7 @@ export default function ProductsPage() {
                     </FormControl>
                 </Box>
             </Box>
-            {products.length > 0 ?
+            {favorites.length > 0 ?
                 <>
                     <Box sx={{
                         display: 'flex',
@@ -166,10 +174,10 @@ export default function ProductsPage() {
                         gap: '20px',
                         py: 5
                     }}>
-                        {products.map((p) => (
+                        {favorites.map((p) => (
                             <CardProduct
-                                key={p.id}
-                                product={p}
+                                key={p.product.id}
+                                product={p.product}
                             />
                         ))}
                     </Box>
@@ -190,7 +198,7 @@ export default function ProductsPage() {
                     py: 5
                 }}>
                     <Typography variant='h3'>Désolé, aucun résultat</Typography>
-                    <Typography variant='body1'>Aucun article ne correspond à ta recherche. Pourquoi ne pas essayer un autre mot-clé ou changer de filtre ?</Typography>
+                    <Typography variant='body1'>Aucun article en favoris ne correspond à ta recherche. Pourquoi ne pas essayer un autre mot-clé ou changer de filtre ?</Typography>
                 </Box>
             }
         </Container>

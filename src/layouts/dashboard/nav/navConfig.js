@@ -11,7 +11,7 @@ import {
 const navConfig = [
     {
         title: 'dashboard',
-        path: '/dashboard/app',
+        path: '/dashboard',
         icon: <AssessmentIcon />,
     },
     {

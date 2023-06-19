@@ -22,17 +22,12 @@ import { useForm } from "react-hook-form";
 import axios from "axios"
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
-import SnackbarAlert from "../../components/snackbar-alert/SnackbarAlert";
 import { UserContext } from "../../utils/UserContext";
 
 export default function LoginPage() {
-    const { updateUser } = useContext(UserContext);
+    const { updateUser, showNotification } = useContext(UserContext);
 
     const navigate = useNavigate();
-    const [snackbarProps, setSnackbarProps] = useState({
-        message: "",
-        type: ""
-    });
     const [showPassword, setShowPassword] = useState(false);
     const [passwordValue, setPasswordValue] = useState("");
 
@@ -47,10 +42,13 @@ export default function LoginPage() {
             email: data.email,
             password: data.password
         }).then(res => {
+            showNotification("Connexion réussie", 'success');
             const { roles } = jwt_decode(res.data.token);
 
             const userData = {
                 id: res.data.user.user.id,
+                lastname: res.data.user.user.lastname,
+                firstname: res.data.user.user.firstname,
                 pseudo: res.data.user.user.pseudo,
                 email: res.data.user.user.email,
                 roles,
@@ -58,16 +56,15 @@ export default function LoginPage() {
             }
 
             updateUser(userData);
-            localStorage.setItem('USER', JSON.stringify(userData));
 
             if (roles === 'ROLE_ADMIN') {
-                navigate("/dashboard/app")
+                navigate("/dashboard")
             } else {
                 navigate("/");
             }
 
         }).catch(err => {
-            setSnackbarProps({ message: err.response.data, type: 'error' });
+            showNotification(err.response.data, 'error');
         })
     };
 
@@ -79,7 +76,6 @@ export default function LoginPage() {
             <Helmet>
                 <title>Connexion</title>
             </Helmet>
-            {snackbarProps.message !== "" && <SnackbarAlert message={snackbarProps.message} type={snackbarProps.type} />}
             <Box sx={{ display: 'flex', height: '100vh' }}>
                 <Box
                     sx={{
@@ -103,7 +99,6 @@ export default function LoginPage() {
                 >
                     <Box sx={{ width: '100%', maxWidth: '90%' }}>
                         <Typography variant="h3" align="center" sx={{ mb: 3 }}>Connexion</Typography>
-
                         <TextField
                             id="email"
                             label="Email*"
@@ -175,7 +170,6 @@ export default function LoginPage() {
                                 }
                             }}
                         >Se connecter</Button>
-
                         <Box sx={{
                             display: "flex",
                             justifyContent: "center",

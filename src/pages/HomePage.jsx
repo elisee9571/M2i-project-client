@@ -8,25 +8,46 @@ import {
     AppBar,
     Toolbar,
 } from "@mui/material";
-import useProductsHome from "../hooks/products/useProductsHome";
+import useProductsHome from "../hooks/product/useProductsHome";
 import CardProduct from "../components/card/CardProduct";
+import useFetchCategories from '../hooks/category/useFetchCategories';
+import { useEffect, useState } from 'react';
 
-const pages = ['Art Visuelle', 'Photographie', 'Dessin', 'Peinture'];
+export default function HomePage({ user }) {
+    const { data } = useProductsHome();
+    const { data: dataCategory } = useFetchCategories();
+    const [categories, setCategories] = useState([])
 
-export default function HomePage() {
     const queryParams = new URLSearchParams({
-        category: "",
+        category: "0",
         keyword: "",
         price: 'priceASC',
-        page: '0',
-        size: '9',
+        page: '1',
+        size: '12',
     });
 
-    const { data } = useProductsHome();
+    useEffect(() => {
+        const fetchCategories = () => {
+            try {
+                setCategories(dataCategory);
+            } catch (error) {
+                console.error(error)
+            }
+        };
+
+        fetchCategories();
+    }, [dataCategory])
 
     return (
         <Container maxWidth="xl" sx={{
-            pt: 2,
+            pt: {
+                xs: 0,
+                md: 1
+            },
+            px: {
+                xs: 0,
+                md: 3
+            },
             display: 'flex',
             flexDirection: "column",
             justifyContent: 'center',
@@ -38,31 +59,74 @@ export default function HomePage() {
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 width: "100%",
-                height: "80vh",
-                borderRadius: "20px",
-                p: 1,
+                height: "85vh",
+                borderRadius: {
+                    xs: "0px",
+                    md: "15px"
+                },
+                p: {
+                    xs: 0,
+                    md: 1
+                },
                 mb: 5,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: {
+                    xs: "center",
+                    md: "space-between"
+                },
+                alignItems: {
+                    xs: "center",
+                    md: "start"
+                }
             }}>
                 <AppBar position="static" sx={{
                     borderRadius: "15px",
-                    background: "white"
+                    background: "white",
+                    display: { xs: 'none', md: 'flex' }
                 }}>
                     <Toolbar sx={{
+                        display: 'flex',
+                        justifyContent: 'center'
                     }}>
-                        {pages.map((page, index) => (
-                            <Link component={RouterLink} to={`/products?category=${index + 1}&keyword=&price=priceASC&page=0&size=9`} underline="none">
+                        {categories.map((category) => (
+                            <Link key={category.id} component={RouterLink} to={`/products/search?category=${category.id}&keyword=&price=priceASC&page=1&size=12`} underline="none">
                                 <Button
-                                    key={page}
-                                    // onClick={handleCloseNavMenu}
                                     sx={{ my: 2, color: 'black', display: 'block' }}
                                 >
-                                    {page}
+                                    {category.title}
                                 </Button>
                             </Link>
-
-                        ))}
+                        ))
+                        }
                     </Toolbar>
                 </AppBar>
+                <Box sx={{
+                    width: {
+                        xs: "90%",
+                        md: "65%"
+                    },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: "space-between",
+                    gap: "25px",
+                    m: {
+                        xs: 0,
+                        md: 5
+                    }
+                }}>
+                    <Typography variant='h5' color={"white"}>
+                        Un espace dédié à l'expression artistique et à la découverte
+                    </Typography>
+                    <Typography variant='h4' color={"white"}>
+                        Explorez, achetez et soutenez des créateurs indépendants sans intermédiaire
+                    </Typography>
+                    <Typography variant='h6' color={"white"}>
+                        Découvrez et d'achetez une variété de créations uniques,
+                        allant des œuvres d'art aux produits faits main, en passant par des produits
+                        numériques et bien d'autres.
+                    </Typography>
+                </Box>
             </Box>
             <Container sx={{
                 display: 'flex',
@@ -90,7 +154,7 @@ export default function HomePage() {
                     justifyContent: 'center',
                     width: "100%"
                 }}>
-                    <Link component={RouterLink} to={`/products?${queryParams.toString()}`} underline="none" sx={{
+                    <Link component={RouterLink} to={`/products/search?${queryParams.toString()}`} underline="none" sx={{
                         m: 1
                     }}>
                         <Button variant="solid"
@@ -106,6 +170,6 @@ export default function HomePage() {
                     </Link>
                 </Box>
             </Container>
-        </Container>
+        </Container >
     )
 }
