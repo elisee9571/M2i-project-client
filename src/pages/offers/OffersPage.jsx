@@ -85,7 +85,7 @@ export default function OffersPages({ user }) {
 
                 await axios.request(config)
                     .then(res => {
-                        console.log(res.data);
+                        // console.log(res.data);
                         showNotification(res.data, "success");
                     }).catch(err => {
                         console.error(err);

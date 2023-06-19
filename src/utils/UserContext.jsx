@@ -27,17 +27,17 @@ export const UserProvider = ({ children }) => {
                 setUser(JSON.parse(storedUser));
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
-
     }, []);
 
     const updateUser = (userData) => {
         try {
-            setUser(userData);
-            localStorage.setItem('USER', JSON.stringify(userData));
+            const updatedUser = { ...user, ...userData }; // Combinaison des données existantes avec les nouvelles données
+            setUser(updatedUser);
+            localStorage.setItem('USER', JSON.stringify(updatedUser));
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     };
 

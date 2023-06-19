@@ -30,6 +30,7 @@ export default function RegisterPage() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordValue, setPasswordValue] = useState("");
+    const [pseudo, setPseudoValue] = useState("");
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -123,8 +124,22 @@ export default function RegisterPage() {
                             label="Pseudo*"
                             type='text'
                             fullWidth
-                            {...register("pseudo", { required: true })}
-                            helperText={errors.pseudo && "Pseudo requis."}
+                            inputProps={{ maxLength: 20 }}
+                            {...register("pseudo", {
+                                required: true,
+                                maxLength: {
+                                    value: 20,
+                                    message: "Pseudo requis et ne peut pas dépasser 20 caractères"
+                                },
+                                minLength: {
+                                    value: 3,
+                                    message: "Pseudo requis et doit dépasser 3 caractères"
+                                },
+                                onChange: (e) => {
+                                    setPseudoValue(e.target.value);
+                                }
+                            })}
+                            helperText={errors.pseudo && errors.pseudo.message}
                             error={Boolean(errors.pseudo)}
                             sx={{
                                 pb: 2
@@ -165,11 +180,19 @@ export default function RegisterPage() {
                                         </IconButton>
                                     </InputAdornment>
                                 }
-                                {...register("password", { required: true })}
-                                onChange={e => setPasswordValue(e.target.value)}
+                                {...register("password", {
+                                    required: true,
+                                    minLength: {
+                                        value: 4,
+                                        message: "Mot de passe requis et doit être superieur à 4 caracteres"
+                                    },
+                                    onChange: (e) => {
+                                        setPasswordValue(e.target.value);
+                                    }
+                                })}
                                 error={Boolean(errors.password)}
                             />
-                            <FormHelperText error={Boolean(errors.password)}>{(errors.password && "Mot de passe requis et doit être superieur à 4 caracteres.") || (passwordValue.length > 1 && "Ne partagez votre mot de passe avec personne.")}</FormHelperText>
+                            <FormHelperText error={Boolean(errors.password)}>{errors.password && errors.password.message}</FormHelperText>
                         </FormControl>
                         <Button
                             fullWidth
