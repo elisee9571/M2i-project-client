@@ -1,9 +1,13 @@
 import { Box, Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
 import { fCurrency } from '../../utils/formatNumber'
 import { fToNow } from '../../utils/formatTime';
+import axios from 'axios';
+import { useContext } from 'react';
+import { UserContext } from '../../utils/UserContext';
 
 
 export default function CardOffer({ offer, user }) {
+    const { showNotification } = useContext(UserContext);
     const getStatusLabel = (status) => {
         switch (status) {
             case "REJECTED":
@@ -28,6 +32,52 @@ export default function CardOffer({ offer, user }) {
                 return null;
         }
     };
+
+    const handleAcceptedOffer = async (e) => {
+        e.preventDefault();
+        if (offer && user) {
+            const config = {
+                method: 'patch',
+                maxBodyLength: Infinity,
+                url: `${process.env.REACT_APP_API_URL}/offers/acceptOrRejectOffer/${offer.product.id}/${offer.id}?accept=true`,
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            };
+
+            await axios.request(config)
+                .then(res => {
+                    showNotification(res.data, "success");
+                }).catch(err => {
+                    console.error(err);
+                    showNotification(err.response.data, "error");
+                });
+        }
+    }
+
+    const handleRefusedOffer = async (e) => {
+        e.preventDefault();
+
+        if (offer && user) {
+            const config = {
+                method: 'patch',
+                maxBodyLength: Infinity,
+                url: `${process.env.REACT_APP_API_URL}/offers/acceptOrRejectOffer/${offer.product.id}/${offer.id}?accept=false`,
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            };
+
+            await axios.request(config)
+                .then(res => {
+                    showNotification(res.data, "success");
+                }).catch(err => {
+                    console.error(err);
+                    showNotification(err.response.data, "error");
+                });
+        }
+    }
+
     return (
         <>
             {offer ? (
@@ -91,7 +141,9 @@ export default function CardOffer({ offer, user }) {
                                 {offer.status === "PENDING" &&
                                     <>
 
-                                        <Button variant="outlined"
+                                        <Button
+                                            onClick={handleAcceptedOffer}
+                                            variant="outlined"
                                             sx={{
                                                 color: "black",
                                                 borderColor: "black",
@@ -102,7 +154,9 @@ export default function CardOffer({ offer, user }) {
                                             }}>
                                             ACCEPTER
                                         </Button>
-                                        <Button variant="solid"
+                                        <Button
+                                            onClick={handleRefusedOffer}
+                                            variant="solid"
                                             sx={{
                                                 color: "white",
                                                 background: "black",

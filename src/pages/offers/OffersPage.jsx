@@ -178,81 +178,88 @@ export default function OffersPages({ user }) {
                         md: "55%"
                     }
                 }}>
-                    <Paper sx={{
-                        mb: 2
-                    }}>
-                        <Box sx={{
-                            p: 2
-                        }}>
-                            {product.user &&
-                                <Typography variant='h6'
-                                    sx={{
-                                        pt: 2,
-                                        textAlign: "center"
-                                    }}
-                                >
-                                    Envoyer une offre à <strong>{product.user.pseudo}</strong>
-                                </Typography>
-                            }
-                            <Box
-                                sx={{
-                                    flex: '1',
-                                    display: 'flex',
-                                    flexDirection: "column",
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    p: 5
-                                }}
-                                component="form"
-                                action="POST"
-                                onSubmit={handleSubmit(onSubmitOffer)}
-                            >
-                                <FormControl fullWidth sx={{
-                                    pb: 2
+                    {product.user?.pseudo !== user?.pseudo ?
+                        <>
+                            <Paper sx={{
+                                mb: 2
+                            }}>
+                                <Box sx={{
+                                    p: 2
                                 }}>
-                                    <InputLabel htmlFor="amount" error={Boolean(errors.amount)}>Montant de l'offre</InputLabel>
-                                    <OutlinedInput
-                                        id="amount"
-                                        label="Montant de l'offre"
-                                        type="number"
-                                        endAdornment={
-                                            <InputAdornment
-                                                position="end"
-                                                color={errors.amount && "error"}
-                                            >
-                                                €
-                                            </InputAdornment>
-                                        }
-                                        {...register("amount", { required: true })}
-                                        onChange={handleChangeAmout}
-                                        error={Boolean(errors.amount)}
-                                    />
-                                    <FormHelperText error={Boolean(errors.amount)}>
-                                        {(errors.amount && "Mot de passe requis et doit être superieur à 4 caracteres.")}
-                                    </FormHelperText>
-                                </FormControl>
-                                <Button
-                                    type='submit'
-                                    sx={{
-                                        py: 1.5,
-                                        borderRadius: 1.5,
-                                        fontWeight: 700,
-                                        background: "black",
-                                        color: "white",
-                                        '&:hover': {
-                                            background: "#00000099"
-                                        },
-                                        '&:disabled': {
-                                            background: "grey",
-                                            color: "#fff"
-                                        }
-                                    }}
-                                >
-                                    Proposer
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Paper>
+                                    {product.user &&
+                                        <Typography variant='h6'
+                                            sx={{
+                                                pt: 2,
+                                                textAlign: "center"
+                                            }}
+                                        >
+                                            Envoyer une offre à <strong>{product.user.pseudo}</strong>
+                                        </Typography>
+                                    }
+                                    <Box
+                                        sx={{
+                                            flex: '1',
+                                            display: 'flex',
+                                            flexDirection: "column",
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            p: 5
+                                        }}
+                                        component="form"
+                                        action="POST"
+                                        onSubmit={handleSubmit(onSubmitOffer)}
+                                    >
+                                        <FormControl fullWidth sx={{
+                                            pb: 2
+                                        }}>
+                                            <InputLabel htmlFor="amount" error={Boolean(errors.amount)}>Montant de l'offre</InputLabel>
+                                            <OutlinedInput
+                                                id="amount"
+                                                label="Montant de l'offre"
+                                                type="number"
+                                                endAdornment={
+                                                    <InputAdornment
+                                                        position="end"
+                                                        color={errors.amount && "error"}
+                                                    >
+                                                        €
+                                                    </InputAdornment>
+                                                }
+                                                {...register("amount", { required: true })}
+                                                onChange={handleChangeAmout}
+                                                error={Boolean(errors.amount)}
+                                            />
+                                            <FormHelperText error={Boolean(errors.amount)}>
+                                                {(errors.amount && "Mot de passe requis et doit être superieur à 4 caracteres.")}
+                                            </FormHelperText>
+                                        </FormControl>
+                                        <Button
+                                            fullWidth
+                                            type='submit'
+                                            sx={{
+                                                py: 1.5,
+                                                borderRadius: 1.5,
+                                                fontWeight: 700,
+                                                background: "black",
+                                                color: "white",
+                                                '&:hover': {
+                                                    background: "#00000099"
+                                                },
+                                                '&:disabled': {
+                                                    background: "grey",
+                                                    color: "#fff"
+                                                }
+                                            }}
+                                        >
+                                            Proposer
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Paper>
+                        </>
+                        :
+                        <Typography variant='h6' sx={{ mb: 3 }}>Proposition d'offre</Typography>
+                    }
                     {offers.length > 0 ? (
                         <>
                             {offers.map(offer => (
@@ -262,6 +269,7 @@ export default function OffersPages({ user }) {
                     ) : (
                         <Typography variant='h6'>Vous avez aucune proposition d'offre</Typography>
                     )}
+
                 </Box>
                 {product.user &&
                     <Box sx={{

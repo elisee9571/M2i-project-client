@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../utils/UserContext';
-import { Box, Button, Container, Grid, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,10 @@ import {
     PersonOff as PersonOffIcon
 } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
-import { stringAvatarSquare } from '../../utils/stringAvatar';
+import {
+    VisibilityOff,
+    Visibility
+} from '@mui/icons-material';
 
 function a11yProps(index) {
     return {
@@ -51,6 +54,14 @@ export default function ProfileSettingsPage({ user }) {
         setTabValue(newValue);
     };
 
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [newPasswordValue, setNewPasswordValue] = useState("");
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [oldPasswordValue, setOldPasswordValue] = useState("");
+
+    const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
+    const handleClickShowOldPassword = () => setShowOldPassword((show) => !show);
+
     useEffect(() => {
         if (user) {
             const fetchProfile = async () => {
@@ -69,6 +80,7 @@ export default function ProfileSettingsPage({ user }) {
     }, [user]);
 
     const { register: patchUser, handleSubmit, formState: { errors } } = useForm();
+    const { register: patchPassword, handleSubmit: handleSubmitPassword, formState: { errors: errorsPassword }, reset } = useForm();
 
     const onSubmitPatchUser = async (data, e) => {
         e.preventDefault();
@@ -96,8 +108,36 @@ export default function ProfileSettingsPage({ user }) {
                     email: data.email
                 };
 
-                updateUser(data);
+                updateUser(userData);
                 showNotification(res.data, "success");
+            } catch (err) {
+                console.error(err);
+                showNotification(err.response.data, "error");
+            }
+        }
+    }
+
+    const onSubmitPatchPassword = async (data, e) => {
+        e.preventDefault();
+        console.log("data", data);
+
+        if (user) {
+            try {
+                const config = {
+                    method: 'patch',
+                    maxBodyLength: Infinity,
+                    url: `${process.env.REACT_APP_API_URL}/users/updatePassword`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    data: JSON.stringify(data)
+                };
+
+                const res = await axios.request(config);
+
+                showNotification(res.data, "success");
+                reset();
             } catch (err) {
                 console.error(err);
                 showNotification(err.response.data, "error");
@@ -244,6 +284,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="lastname"
                                                 value={userProfile.lastname}
+                                                placeholder="Nom"
                                                 fullWidth
                                                 {...patchUser("lastname", {
                                                     required: true,
@@ -259,6 +300,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="firstname"
                                                 value={userProfile.firstname}
+                                                placeholder="Prénom"
                                                 fullWidth
                                                 {...patchUser("firstname", {
                                                     required: true,
@@ -308,6 +350,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="pseudo"
                                                 value={userProfile.pseudo}
+                                                placeholder="Pseudo"
                                                 fullWidth
                                                 inputProps={{ maxLength: 20 }}
                                                 {...patchUser("pseudo", {
@@ -366,6 +409,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="email"
                                                 value={userProfile.email}
+                                                placeholder="Email"
                                                 fullWidth
                                                 {...patchUser("email", {
                                                     required: true,
@@ -414,6 +458,7 @@ export default function ProfileSettingsPage({ user }) {
                                         <Grid item xs={12}>
                                             <TextField
                                                 id="biography"
+                                                placeholder="Biographie"
                                                 multiline
                                                 rows={4}
                                                 value={userProfile.biography}
@@ -464,6 +509,7 @@ export default function ProfileSettingsPage({ user }) {
                                                 type='number'
                                                 id="phone"
                                                 value={userProfile.phone}
+                                                placeholder="Téléphone"
                                                 fullWidth
                                                 {...patchUser("phone", {
                                                     required: true,
@@ -521,6 +567,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="address"
                                                 value={userProfile.address}
+                                                placeholder="Adresse"
                                                 fullWidth
                                                 {...patchUser("address", {
                                                     required: true,
@@ -616,6 +663,7 @@ export default function ProfileSettingsPage({ user }) {
                                             <TextField
                                                 id="city"
                                                 value={userProfile.city}
+                                                placeholder="Ville"
                                                 fullWidth
                                                 {...patchUser("city", {
                                                     required: true,
@@ -632,6 +680,7 @@ export default function ProfileSettingsPage({ user }) {
                                                 type='number'
                                                 id="zipCode"
                                                 value={userProfile.zipCode}
+                                                placeholder="Code postale"
                                                 fullWidth
                                                 {...patchUser("zipCode", {
                                                     required: true,
@@ -693,8 +742,117 @@ export default function ProfileSettingsPage({ user }) {
                         </Box>
                     </TabPanel >
                     <TabPanel value={tabValue} index={1}>
-                        <Typography variant='h5'>Sécurité</Typography>
-
+                        <Box
+                            component="form"
+                            action="POST"
+                            onSubmit={handleSubmitPassword(onSubmitPatchPassword)}
+                            sx={{
+                                position: "relative"
+                            }}
+                        >
+                            <Typography variant='h5' sx={{ mb: 5 }}>Sécurité</Typography>
+                            <FormControl sx={{
+                                pb: 2,
+                                display: "flex",
+                                width: {
+                                    xs: "100%",
+                                    md: "50%"
+                                }
+                            }}>
+                                <InputLabel htmlFor="oldPassword" error={Boolean(errorsPassword.oldPassword)}>Mot de passe actuel*</InputLabel>
+                                <OutlinedInput
+                                    id="oldPassword"
+                                    label="Nouveau mot de passe*"
+                                    type={showOldPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowOldPassword}
+                                            >
+                                                {showOldPassword ?
+                                                    <Visibility color={errorsPassword.oldPassword && "error"} /> :
+                                                    <VisibilityOff color={errorsPassword.oldPassword && "error"} />
+                                                }
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    {...patchPassword("oldPassword", {
+                                        required: true,
+                                        minLength: {
+                                            value: 4,
+                                            message: "Mot de passe requis et doit être superieur à 4 caracteres"
+                                        },
+                                        onChange: (e) => {
+                                            setOldPasswordValue(e.target.value);
+                                        }
+                                    })}
+                                    error={Boolean(errorsPassword.oldPassword)}
+                                />
+                                <FormHelperText error={Boolean(errorsPassword.oldPassword)}>
+                                    {errorsPassword.oldPassword && errorsPassword.oldPassword.message}
+                                </FormHelperText>
+                            </FormControl>
+                            <FormControl sx={{
+                                pb: 2,
+                                display: "flex",
+                                width: {
+                                    xs: "100%",
+                                    md: "50%"
+                                }
+                            }}>
+                                <InputLabel htmlFor="newPassword" error={Boolean(errorsPassword.password)}>Nouveau mot de passe*</InputLabel>
+                                <OutlinedInput
+                                    id="newPassword"
+                                    label="Nouveau mot de passe*"
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowNewPassword}
+                                            >
+                                                {showNewPassword ?
+                                                    <Visibility color={errorsPassword.password && "error"} /> :
+                                                    <VisibilityOff color={errorsPassword.password && "error"} />
+                                                }
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    {...patchPassword("password", {
+                                        required: true,
+                                        minLength: {
+                                            value: 4,
+                                            message: "Mot de passe requis et doit être superieur à 4 caracteres"
+                                        },
+                                        onChange: (e) => {
+                                            setNewPasswordValue(e.target.value);
+                                        }
+                                    })}
+                                    error={Boolean(errorsPassword.password)}
+                                />
+                                <FormHelperText error={Boolean(errorsPassword.password)}>
+                                    {errorsPassword.password && errorsPassword.password.message}
+                                </FormHelperText>
+                            </FormControl>
+                            <Button
+                                type='submit'
+                                sx={{
+                                    py: 1.5,
+                                    px: 3,
+                                    fontWeight: 700,
+                                    background: "black",
+                                    color: "white",
+                                    '&:hover': {
+                                        background: "#00000099"
+                                    },
+                                    '&:disabled': {
+                                        background: "grey",
+                                        color: "#fff"
+                                    }
+                                }}
+                            >Sauvegarder</Button>
+                        </Box>
                     </TabPanel>
                     <TabPanel value={tabValue} index={2}>
                         <Typography variant='h5'>Notifications</Typography>

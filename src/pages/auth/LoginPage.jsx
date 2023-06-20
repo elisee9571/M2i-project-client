@@ -133,18 +133,26 @@ export default function LoginPage() {
                                         </IconButton>
                                     </InputAdornment>
                                 }
-                                {...register("password", { required: true })}
-                                onChange={e => setPasswordValue(e.target.value)}
+                                {...register("password", {
+                                    required: true,
+                                    minLength: {
+                                        value: 4,
+                                        message: "Mot de passe requis et doit être superieur à 4 caracteres"
+                                    },
+                                    onChange: (e) => {
+                                        setPasswordValue(e.target.value);
+                                    }
+                                })}
                                 error={Boolean(errors.password)}
                             />
-                            <FormHelperText error={Boolean(errors.password)}>{(errors.password && "Mot de passe requis et doit être superieur à 4 caracteres.") || (passwordValue.length > 4 && "Ne partagez votre mot de passe avec personne.")}</FormHelperText>
+                            <FormHelperText error={Boolean(errors.password)}>{errors.password && errors.password.message}</FormHelperText>
                         </FormControl>
                         <Box sx={{
                             display: "flex",
                             justifyContent: "end",
                             pb: 2
                         }}>
-                            <Link to={"/"} component={RouterLink} variant="body2" sx={{
+                            <Link to={"/forgot-password"} component={RouterLink} variant="body2" sx={{
                                 color: "grey",
                                 textDecoration: "none",
                                 "&:hover": {
@@ -185,7 +193,7 @@ export default function LoginPage() {
                         </Box>
                     </Box>
                 </Box>
-            </Box >
+            </Box>
         </div>
     )
 }

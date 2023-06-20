@@ -21,6 +21,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 // products
 import ProductsPage from './pages/products/ProductsPage';
 import ProductPage from './pages/products/ProductPage';
+import ProductAddPage from './pages/products/ProductAddPage';
 
 // favorites
 import FavoritesPage from './pages/favorites/FavoritesPage';
@@ -37,10 +38,15 @@ import UsersPage from './pages/users/UsersPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 
+// password
+import ForgotPasswordPage from './pages/password/ForgotPasswordPage';
+import ResetPasswordPage from './pages/password/ResetPasswordPage';
+
 // middleware
 import { CheckAuth, IsAlreadyAuth } from './utils/auth/CheckAuth';
 import { useContext } from 'react';
 import { UserContext } from './utils/UserContext';
+
 
 
 export default function Router() {
@@ -68,6 +74,7 @@ export default function Router() {
                     path: "products",
                     children: [
                         { path: ':id', element: <ProductPage user={user} /> },
+                        { path: 'add', element: <ProductAddPage user={user} /> },
                         { path: 'search', element: <ProductsPage user={user} /> },
                     ]
                 },
@@ -79,6 +86,18 @@ export default function Router() {
                     ]
                 }
             ]
+        },
+        { path: 'login', element: <IsAlreadyAuth children={<LoginPage />} /> },
+        { path: 'register', element: <IsAlreadyAuth children={<RegisterPage />} /> },
+        { path: 'forgot-password', element: <IsAlreadyAuth children={<ForgotPasswordPage />} /> },
+        { path: 'reset-password', element: <IsAlreadyAuth children={<ResetPasswordPage />} /> },
+        {
+            element: <SimpleLayout />,
+            children: [
+                { path: '404', element: <Page404 /> },
+                { path: '401', element: <Page401 /> },
+                { path: '*', element: <Navigate to="/404" /> },
+            ],
         },
         {
             path: 'dashboard',
@@ -106,22 +125,6 @@ export default function Router() {
                 }
             ],
         },
-        {
-            path: 'login',
-            element: <IsAlreadyAuth children={<LoginPage />} />
-        },
-        {
-            path: 'register',
-            element: <IsAlreadyAuth children={<RegisterPage />} />
-        },
-        {
-            element: <SimpleLayout />,
-            children: [
-                { path: '404', element: <Page404 /> },
-                { path: '401', element: <Page401 /> },
-                { path: '*', element: <Navigate to="/404" /> },
-            ],
-        }
     ]);
 
     return routes;

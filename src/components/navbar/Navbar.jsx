@@ -32,7 +32,8 @@ import {
     Logout as LogoutIcon,
     AccountCircle as AccountCircleIcon,
     PersonOutlineOutlined as PersonOutlineOutlinedIcon,
-    BookmarkBorder as BookmarkBorderIcon
+    BookmarkBorder as BookmarkBorderIcon,
+    Assessment as AssessmentIcon
 } from '@mui/icons-material';
 
 import axios from 'axios';
@@ -149,6 +150,24 @@ export default function Navbar({ user }) {
                 </MenuItem>
             </Link>
             <Divider />
+            {user?.roles === "ROLE_ADMIN" &&
+                <>
+                    <Link component={RouterLink} to={`/dashboard`} underline="none" sx={{
+                        textDecoration: "none",
+                        color: "black"
+                    }}>
+                        <MenuItem
+                            sx={{ m: 1 }}
+                            onClick={handleMenuClose}>
+                            <ListItemIcon>
+                                <AssessmentIcon fontSize="medium" />
+                            </ListItemIcon>
+                            Dashboard
+                        </MenuItem>
+                    </Link>
+                    <Divider />
+                </>
+            }
             <Link component={RouterLink} to={`/profile/settings`} underline="none" sx={{
                 textDecoration: "none",
                 color: "black"
@@ -196,9 +215,9 @@ export default function Navbar({ user }) {
             }}
             role="presentation"
         >
-            {!user &&
-                <>
-                    <Box>
+            <Box>
+                {!user &&
+                    <>
                         <Typography variant='body1' sx={{
                             p: 3
                         }}>Devenez Membre Nike pour accéder au meilleur des produits et découvrir des contenus sportifs inspirants. En savoir plus</Typography>
@@ -239,10 +258,29 @@ export default function Navbar({ user }) {
                                 Se connecter
                             </Button>
                         </Link>
-                    </Box>
-                    <Divider />
-                </>
-            }
+                    </>
+                }
+                <Link component={RouterLink} to="/products/add" underline="none" sx={{
+                    my: 1,
+                    mx: 3,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    display: { xs: 'flex', md: 'none' }
+                }}>
+                    <Button variant="solid"
+                        sx={{
+                            width: "100%",
+                            color: "white",
+                            background: "black",
+                            '&:hover': {
+                                background: "#00000099",
+                            },
+                        }}>
+                        Publier un article
+                    </Button>
+                </Link>
+            </Box>
+            <Divider />
             <Box sx={{
                 m: 1,
                 display: 'flex',
@@ -476,27 +514,47 @@ export default function Navbar({ user }) {
                         </Box>
                     }
                     {user &&
-                        <Box>
-                            <Link component={RouterLink} to={`/favorites?${queryParamsFavorites.toString()}`} underline="none">
+                        <>
+                            <Link component={RouterLink} to="/products/add" underline="none" sx={{
+                                p: 1,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                display: { xs: 'none', md: 'flex' }
+                            }}>
+                                <Button variant="solid"
+                                    sx={{
+                                        width: "100%",
+                                        color: "white",
+                                        background: "black",
+                                        '&:hover': {
+                                            background: "#00000099",
+                                        },
+                                    }}>
+                                    Publier un article
+                                </Button>
+                            </Link>
+                            <Box>
+                                <Link component={RouterLink} to={`/favorites?${queryParamsFavorites.toString()}`} underline="none">
+                                    <IconButton
+                                        size="large"
+                                        aria-label="favorite list of current user"
+                                        color="black"
+                                    >
+                                        <BookmarkBorderIcon />
+                                    </IconButton>
+                                </Link>
                                 <IconButton
                                     size="large"
-                                    aria-label="favorite list of current user"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    onClick={handleProfileMenuOpen}
                                     color="black"
                                 >
-                                    <BookmarkBorderIcon />
+                                    <PersonOutlineOutlinedIcon />
                                 </IconButton>
-                            </Link>
-                            <IconButton
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="black"
-                            >
-                                <PersonOutlineOutlinedIcon />
-                            </IconButton>
-                        </Box>
+                            </Box>
+                        </>
                     }
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
