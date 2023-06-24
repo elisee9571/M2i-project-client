@@ -23,3 +23,13 @@ export function IsAlreadyAuth({ children }) {
         return children;
     }
 }
+
+export function RequiredAuth({ children }) {
+    const user = JSON.parse(localStorage.getItem('USER'))
+
+    if (!user) {
+        return <Navigate to="/login" />;
+    } else {
+        return children;
+    }
+}

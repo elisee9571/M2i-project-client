@@ -121,6 +121,11 @@ export default function ProductPage({ user }) {
     }, [pathname, user])
 
     const handlePayment = () => {
+        if (!user) {
+            // Rediriger vers la page de connexion
+            navigate('/login');
+            return;
+        }
 
         const config = {
             method: 'post',

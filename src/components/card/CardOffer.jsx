@@ -4,10 +4,12 @@ import { fToNow } from '../../utils/formatTime';
 import axios from 'axios';
 import { useContext } from 'react';
 import { UserContext } from '../../utils/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function CardOffer({ offer, user }) {
     const { showNotification } = useContext(UserContext);
+    const navigate = useNavigate();
     const getStatusLabel = (status) => {
         switch (status) {
             case "REJECTED":
@@ -79,6 +81,12 @@ export default function CardOffer({ offer, user }) {
     }
 
     const handlePayment = () => {
+        if (!user) {
+            // Rediriger vers la page de connexion
+            navigate('/login');
+            return;
+        }
+
         const config = {
             method: 'post',
             maxBodyLength: Infinity,

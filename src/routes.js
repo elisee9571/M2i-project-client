@@ -49,7 +49,7 @@ import PaymentPage from './pages/payment/PaymentPage';
 import OrdersPage from './pages/orders/OrdersPage';
 
 // middleware
-import { CheckAuth, IsAlreadyAuth } from './utils/auth/CheckAuth';
+import { CheckAuth, IsAlreadyAuth, RequiredAuth } from './utils/auth/CheckAuth';
 import { useContext } from 'react';
 import { UserContext } from './utils/UserContext';
 
@@ -70,25 +70,25 @@ export default function Router() {
                 {
                     path: "profile",
                     children: [
-                        { path: ':pseudo', element: <ProfilePage user={user} /> },
-                        { path: 'settings', element: <ProfileSettingsPage user={user} /> },
+                        { path: ':pseudo', element: <RequiredAuth children={<ProfilePage user={user} />} /> },
+                        { path: 'settings', element: <RequiredAuth children={<ProfileSettingsPage user={user} />} /> },
                     ]
                 },
                 {
                     path: "products",
                     children: [
                         { path: ':id', element: <ProductPage user={user} /> },
-                        { path: 'add', element: <ProductAddPage user={user} /> },
+                        { path: 'add', element: <RequiredAuth children={<ProductAddPage user={user} />} /> },
                         { path: 'search', element: <ProductsPage user={user} /> },
                     ]
                 },
-                { path: 'favorites', element: <FavoritesPage user={user} /> },
-                { path: 'payment', element: <PaymentPage user={user} /> },
-                { path: 'orders', element: <OrdersPage user={user} /> },
+                { path: 'favorites', element: <RequiredAuth children={<FavoritesPage user={user} />} /> },
+                { path: 'payment', element: <RequiredAuth children={<PaymentPage user={user} />} /> },
+                { path: 'orders', element: <RequiredAuth children={<OrdersPage user={user} />} /> },
                 {
                     path: "offers",
                     children: [
-                        { path: 'propose', element: <OffersPage user={user} /> },
+                        { path: 'propose', element: <RequiredAuth children={<OffersPage user={user} />} /> },
                     ]
                 }
             ]
