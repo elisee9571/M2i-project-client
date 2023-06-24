@@ -220,7 +220,9 @@ export default function Navbar({ user }) {
                     <>
                         <Typography variant='body1' sx={{
                             p: 3
-                        }}>Devenez Membre Nike pour accéder au meilleur des produits et découvrir des contenus sportifs inspirants. En savoir plus</Typography>
+                        }}>
+                            Découvrez un monde de créations en devenant membre dès maintenant. Rejoignez-nous pour explorer, inspirer et être inspiré par des œuvres uniques.
+                        </Typography>
                         <Link component={RouterLink} to="/register" underline="none" sx={{
                             my: 1,
                             mx: 3,
