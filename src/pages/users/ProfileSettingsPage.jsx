@@ -172,7 +172,7 @@ export default function ProfileSettingsPage({ user }) {
                                     backgroundColor: "black",
                                 }
                             }}>
-                            <Tab icon={<AccountBoxIcon />} iconPosition="start" label="Générale" {...a11yProps(0)}
+                            <Tab icon={<AccountBoxIcon />} iconPosition="start" label="Général" {...a11yProps(0)}
                                 sx={{
                                     "&.Mui-selected": {
                                         color: "black",
@@ -207,7 +207,7 @@ export default function ProfileSettingsPage({ user }) {
                                 position: "relative"
                             }}
                         >
-                            <Typography variant='h5' sx={{ mb: 5 }}>Générale</Typography>
+                            <Typography variant='h5' sx={{ mb: 5 }}>Général</Typography>
                             <Box sx={{
                                 display: "flex",
                                 justifyContent: 'end',
@@ -217,21 +217,6 @@ export default function ProfileSettingsPage({ user }) {
                                 gap: "15px",
                                 display: { xs: "none", md: "flex" }
                             }}>
-                                <Button
-                                    type='reset'
-                                    variant="outlined"
-                                    sx={{
-                                        py: 1.25,
-                                        px: 3,
-                                        color: "black",
-                                        borderColor: "black",
-                                        '&:hover': {
-                                            background: "#00000010",
-                                            borderColor: "black",
-                                        },
-                                    }}>
-                                    Annuler
-                                </Button>
                                 <Button
                                     type='submit'
                                     variant="solid"
@@ -708,21 +693,6 @@ export default function ProfileSettingsPage({ user }) {
                                     display: { xs: "flex", md: "none" },
                                     gap: "15px"
                                 }}>
-                                    <Button
-                                        type='reset'
-                                        variant="outlined"
-                                        sx={{
-                                            py: 1.25,
-                                            px: 3,
-                                            color: "black",
-                                            borderColor: "black",
-                                            '&:hover': {
-                                                background: "#00000010",
-                                                borderColor: "black",
-                                            },
-                                        }}>
-                                        Annuler
-                                    </Button>
                                     <Button
                                         type='submit'
                                         variant="solid"

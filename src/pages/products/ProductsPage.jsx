@@ -19,7 +19,7 @@ export default function ProductsPage() {
     const [totalProducts, setTotalProducts] = useState(0);
     const [category, setCategory] = useState(searchParams.get('category'));
     const [categories, setCategories] = useState([]);
-    const [price, setPrice] = useState(searchParams.get('price'));
+    const [sort, setSort] = useState(searchParams.get('sort'));
 
     const { data } = useFetchCategories();
 
@@ -36,7 +36,7 @@ export default function ProductsPage() {
             const queryParams = new URLSearchParams({
                 category: category,
                 keyword: searchParams.get('keyword'),
-                price: price,
+                sort: sort,
                 page: page,
                 size: searchParams.get('size'),
             });
@@ -55,14 +55,14 @@ export default function ProductsPage() {
 
         fetchCategories();
         fetchData();
-    }, [location.search, page, category, price, data]);
+    }, [location.search, page, category, sort, data]);
 
     const handleChangePage = (event, value) => {
         setPage(value);
         const queryParams = new URLSearchParams({
             category: category,
             keyword: searchParams.get('keyword'),
-            price: price,
+            sort: sort,
             page: value,
             size: searchParams.get('size'),
         });
@@ -70,12 +70,12 @@ export default function ProductsPage() {
         navigate(newUrl);
     };
 
-    const handleChangePrice = (event) => {
-        setPrice(event.target.value);
+    const handleChangeSort = (event) => {
+        setSort(event.target.value);
         const queryParams = new URLSearchParams({
             category: category,
             keyword: searchParams.get('keyword'),
-            price: event.target.value,
+            sort: event.target.value,
             page: page,
             size: searchParams.get('size'),
         });
@@ -88,7 +88,7 @@ export default function ProductsPage() {
         const queryParams = new URLSearchParams({
             category: event.target.value,
             keyword: searchParams.get('keyword'),
-            price: price,
+            sort: sort,
             page: page,
             size: searchParams.get('size'),
         });
@@ -147,12 +147,14 @@ export default function ProductsPage() {
                         <Select
                             labelId="select-label-trie"
                             id="select-trie"
-                            value={price}
+                            value={sort}
                             label="Trier par"
-                            onChange={handleChangePrice}
+                            onChange={handleChangeSort}
                         >
-                            <MenuItem value={"priceDESC"}>Prix décroissant</MenuItem>
-                            <MenuItem value={"priceASC"}>Prix croissant</MenuItem>
+                            <MenuItem value={"createdAtDESC"}>Plus récents</MenuItem>
+                            <MenuItem value={"createdAtASC"}>Plus anciens</MenuItem>
+                            <MenuItem value={"priceDESC"}>Prix décroissants</MenuItem>
+                            <MenuItem value={"priceASC"}>Prix croissants</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>

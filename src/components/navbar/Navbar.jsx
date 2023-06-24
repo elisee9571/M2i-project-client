@@ -151,7 +151,7 @@ export default function Navbar({ user }) {
             </Link>
             <Divider />
             {user?.roles === "ROLE_ADMIN" &&
-                <>
+                <Box>
                     <Link component={RouterLink} to={`/dashboard`} underline="none" sx={{
                         textDecoration: "none",
                         color: "black"
@@ -166,7 +166,7 @@ export default function Navbar({ user }) {
                         </MenuItem>
                     </Link>
                     <Divider />
-                </>
+                </Box>
             }
             <Link component={RouterLink} to={`/profile/settings`} underline="none" sx={{
                 textDecoration: "none",
@@ -326,7 +326,7 @@ export default function Navbar({ user }) {
                 mx: 2
             }}>
                 {categories.map((category) => (
-                    <Link key={category.id} component={RouterLink} to={`/products?category=${category.id}&keyword=&price=priceASC&page=1&size=9`} underline="none">
+                    <Link key={category.id} component={RouterLink} to={`/products?category=${category.id}&keyword=&sort=&page=1&size=9`} underline="none">
                         <ListItem disablePadding>
                             <ListItemButton onClick={toggleDrawer(anchor, false)}>
                                 <ListItemIcon>{icon({ category })}</ListItemIcon>
@@ -357,7 +357,7 @@ export default function Navbar({ user }) {
     //query params for favorites
     const queryParamsFavorites = new URLSearchParams({
         category: '0',
-        price: 'priceASC',
+        sort: '',
         page: '1',
         size: '12',
     });
@@ -382,7 +382,7 @@ export default function Navbar({ user }) {
             const queryParams = new URLSearchParams({
                 category: '0',
                 keyword: searchText,
-                price: 'priceASC',
+                sort: '',
                 page: '1',
                 size: '12',
             });

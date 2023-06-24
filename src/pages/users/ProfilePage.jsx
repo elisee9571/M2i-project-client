@@ -24,7 +24,7 @@ export default function ProfilePage({ user }) {
     const [totalProducts, setTotalProducts] = useState(null);
     const [category, setCategory] = useState("");
     const [categories, setCategories] = useState([]);
-    const [price, setPrice] = useState("priceASC");
+    const [sort, setSort] = useState("");
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -47,37 +47,43 @@ export default function ProfilePage({ user }) {
         };
 
         const fetchProfileAndProducts = async () => {
-            axios.get(`${process.env.REACT_APP_API_URL}/users/${pathname}`)
-                .then(res => {
-                    // console.log("userProfile", res.data)
-                    setUserProfile(res.data);
+            try {
+                const config = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: `${process.env.REACT_APP_API_URL}/users/${pathname}`
+                };
 
-                    axios.get(`${process.env.REACT_APP_API_URL}/products/user/${pathname}?category=${category}&price=${price}&page=${page}&size=12`)
-                        .then(res => {
-                            // console.log("products", res.data)
-                            setProducts(res.data.products);
-                            setTotalPages(res.data.totalPages);
-                            setTotalProducts(res.data.totalProducts);
-                        }).catch(err => {
-                            console.error(err);
-                        });
+                const res = await axios.request(config);
+                setUserProfile(res.data);
 
-                }).catch(err => {
-                    console.error(err);
-                    navigate("/404");
-                });
-        };
+                axios.get(`${process.env.REACT_APP_API_URL}/products/user/${pathname}?category=${category}&sort=${sort}&page=${page}&size=12`, {
+                    headers: user ? { 'Authorization': `Bearer ${user.token}` } : undefined
+                })
+                    .then(res => {
+                        // console.log("products", res.data)
+                        setProducts(res.data.products);
+                        setTotalPages(res.data.totalPages);
+                        setTotalProducts(res.data.totalProducts);
+                    }).catch(err => {
+                        console.error(err);
+                    });
+            } catch (err) {
+                console.error(err);
+                navigate("/404");
+            }
+        }
 
         fetchCategories();
         fetchProfileAndProducts();
-    }, [pathname, navigate, page, category, price, categoriesData]);
+    }, [pathname, navigate, page, category, sort, categoriesData, user]);
 
     const handleChangePage = (event, value) => {
         setPage(value);
     };
 
-    const handleChangePrice = (event) => {
-        setPrice(event.target.value);
+    const handleChangeSort = (event) => {
+        setSort(event.target.value);
     };
 
     const handleChangeCategory = (event) => {
@@ -210,12 +216,14 @@ export default function ProfilePage({ user }) {
                                     <Select
                                         labelId="select-label-trie"
                                         id="select-trie"
-                                        value={price}
+                                        value={sort}
                                         label="Trier par"
-                                        onChange={handleChangePrice}
+                                        onChange={handleChangeSort}
                                     >
-                                        <MenuItem value={"priceDESC"}>Prix décroissant</MenuItem>
-                                        <MenuItem value={"priceASC"}>Prix croissant</MenuItem>
+                                        <MenuItem value={"createdAtDESC"}>Plus récents</MenuItem>
+                                        <MenuItem value={"createdAtASC"}>Plus anciens</MenuItem>
+                                        <MenuItem value={"priceDESC"}>Prix décroissants</MenuItem>
+                                        <MenuItem value={"priceASC"}>Prix croissants</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>

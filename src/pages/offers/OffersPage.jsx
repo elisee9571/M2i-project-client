@@ -25,13 +25,36 @@ export default function OffersPages({ user }) {
 
     useEffect(() => {
         const fetchProduct = async () => {
-            axios.get(`${process.env.REACT_APP_API_URL}/products/${searchParams.get('product')}`)
-                .then(res => {
-                    // console.log("product", res.data)
-                    setProduct(res.data);
-                }).catch(err => {
-                    console.error(err)
-                });
+            if (user) {
+                try {
+                    const config = {
+                        method: 'get',
+                        maxBodyLength: Infinity,
+                        url: `${process.env.REACT_APP_API_URL}/products/${searchParams.get('product')}`,
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    };
+
+                    await axios.request(config)
+                        .then(res => {
+                            // console.log("product", res.data)
+                            setProduct(res.data);
+                        })
+
+                } catch (err) {
+                    console.error(err);
+                    showNotification(err.response.data, "error");
+                }
+            } else {
+                axios.get(`${process.env.REACT_APP_API_URL}/products/${searchParams.get('product')}`)
+                    .then(res => {
+                        // console.log("product", res.data)
+                        setProduct(res.data);
+                    }).catch(err => {
+                        console.error(err)
+                    });
+            }
         }
 
         const fetchOffers = async () => {
@@ -87,13 +110,11 @@ export default function OffersPages({ user }) {
                     .then(res => {
                         // console.log(res.data);
                         showNotification(res.data, "success");
-                    }).catch(err => {
-                        console.error(err);
-                        showNotification(err.response.data, "error");
-                    });
+                    })
 
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
+                console.error(err);
+                showNotification(err.response.data, "error");
             }
         }
     }
@@ -309,7 +330,21 @@ export default function OffersPages({ user }) {
                             my: 1
                         }} />
                         <Typography variant='h6' sx={{ fontWeight: 300 }}>Prix</Typography>
-                        <Typography variant='body1' sx={{ fontWeight: "bold" }}>{fCurrency(product.price)}</Typography>
+                        {product.priceOffer !== null ?
+                            <Box sx={{
+                                display: "flex"
+                            }}>
+                                <Typography variant='h6' sx={{ fontWeight: "bold", mr: 2 }}>{fCurrency(product.priceOffer)}</Typography>
+                                <Typography variant='h6'>
+                                    <strike>
+                                        {fCurrency(product.price)}
+                                    </strike>
+                                </Typography>
+                            </Box>
+
+                            :
+                            <Typography variant='h6' sx={{ fontWeight: "bold" }}>{fCurrency(product.price)}</Typography>
+                        }
                     </Box>
                 }
             </Box>

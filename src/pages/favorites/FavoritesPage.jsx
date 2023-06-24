@@ -16,13 +16,15 @@ export default function FavoritesPage() {
     const searchParams = new URLSearchParams(location.search);
     const navigate = useNavigate();
 
+    const pathname = location.pathname;
+
     const [favorites, setFavorites] = useState([])
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
     const [category, setCategory] = useState(searchParams.get('category'));
     const [categories, setCategories] = useState([]);
-    const [price, setPrice] = useState(searchParams.get('price'));
+    const [sort, setSort] = useState(searchParams.get('sort'));
 
     const { data } = useFetchCategories();
 
@@ -39,7 +41,7 @@ export default function FavoritesPage() {
             if (user) {
                 const queryParams = new URLSearchParams({
                     category: category,
-                    price: price,
+                    sort: sort,
                     page: page,
                     size: searchParams.get('size'),
                 });
@@ -68,13 +70,13 @@ export default function FavoritesPage() {
 
         fetchCategories();
         fetchData();
-    }, [location.search, page, category, price, data]);
+    }, [location.search, page, category, sort, data, favorites]);
 
     const handleChangePage = (event, value) => {
         setPage(value);
         const queryParams = new URLSearchParams({
             category: category,
-            price: price,
+            sort: sort,
             page: value,
             size: searchParams.get('size'),
         });
@@ -82,11 +84,11 @@ export default function FavoritesPage() {
         navigate(newUrl);
     };
 
-    const handleChangePrice = (event) => {
-        setPrice(event.target.value);
+    const handleChangeSort = (event) => {
+        setSort(event.target.value);
         const queryParams = new URLSearchParams({
             category: category,
-            price: event.target.value,
+            sort: event.target.value,
             page: page,
             size: searchParams.get('size'),
         });
@@ -98,7 +100,7 @@ export default function FavoritesPage() {
         setCategory(event.target.value);
         const queryParams = new URLSearchParams({
             category: event.target.value,
-            price: price,
+            sort: sort,
             page: page,
             size: searchParams.get('size'),
         });
@@ -155,12 +157,14 @@ export default function FavoritesPage() {
                         <Select
                             labelId="select-label-trie"
                             id="select-trie"
-                            value={price}
+                            value={sort}
                             label="Trier par"
-                            onChange={handleChangePrice}
+                            onChange={handleChangeSort}
                         >
-                            <MenuItem value={"priceDESC"}>Prix décroissant</MenuItem>
-                            <MenuItem value={"priceASC"}>Prix croissant</MenuItem>
+                            <MenuItem value={"createdAtDESC"}>Plus récents</MenuItem>
+                            <MenuItem value={"createdAtASC"}>Plus anciens</MenuItem>
+                            <MenuItem value={"priceDESC"}>Prix décroissants</MenuItem>
+                            <MenuItem value={"priceASC"}>Prix croissants</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>

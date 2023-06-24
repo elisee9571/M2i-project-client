@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Bookmark({ product }) {
     const { user, showNotification } = useContext(UserContext);
+    const location = new URL(window.location.href);
+    const pathname = location.pathname;
     const navigate = useNavigate();
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [likeCount, setLikeCount] = useState(product.favoritesCount);
@@ -60,6 +62,9 @@ export default function Bookmark({ product }) {
                     .then(res => {
                         setIsBookmarked(false);
                         setLikeCount(prevCount => prevCount - 1);
+                        if (pathname === "/favorites") {
+                            showNotification(res.data, "success");
+                        }
                     })
                     .catch(err => {
                         console.error(err);

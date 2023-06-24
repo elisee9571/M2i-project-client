@@ -23,21 +23,21 @@ export default function Page401() {
             <Container>
                 <StyledContent sx={{ textAlign: 'center', alignItems: 'center' }}>
                     <Typography variant="h4" paragraph>
-                        Désolé, non autorisé!
+                        Désolé, non autorisé !
                     </Typography>
 
                     <Typography sx={{ color: 'text.secondary', }}>
                         Vous n'êtes pas autorisé à accéder à cette page. Veuillez vous connecter avec un compte ayant les autorisations appropriées.
                     </Typography>
 
-                    <Box
-                        component="img"
-                        src="/assets/illustrations/illustration_404.svg"
-                        sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
-                    />
+                    <Box sx={{ mx: 'auto', my: { xs: 5, sm: 10 } }}>
+                        <Typography variant="h1" paragraph>
+                            401
+                        </Typography>
+                    </Box>
 
                     <Button to="/" size="large" variant="contained" component={RouterLink}>
-                        Go to Home
+                        Aller à la page d'accueil
                     </Button>
                 </StyledContent>
             </Container>

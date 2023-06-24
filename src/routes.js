@@ -42,12 +42,16 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/password/ForgotPasswordPage';
 import ResetPasswordPage from './pages/password/ResetPasswordPage';
 
+// payment
+import PaymentPage from './pages/payment/PaymentPage';
+
+// orders
+import OrdersPage from './pages/orders/OrdersPage';
+
 // middleware
 import { CheckAuth, IsAlreadyAuth } from './utils/auth/CheckAuth';
 import { useContext } from 'react';
 import { UserContext } from './utils/UserContext';
-
-
 
 export default function Router() {
     const { user } = useContext(UserContext);
@@ -79,6 +83,8 @@ export default function Router() {
                     ]
                 },
                 { path: 'favorites', element: <FavoritesPage user={user} /> },
+                { path: 'payment', element: <PaymentPage user={user} /> },
+                { path: 'orders', element: <OrdersPage user={user} /> },
                 {
                     path: "offers",
                     children: [

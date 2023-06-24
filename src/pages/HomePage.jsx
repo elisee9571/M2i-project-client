@@ -21,7 +21,7 @@ export default function HomePage({ user }) {
     const queryParams = new URLSearchParams({
         category: "0",
         keyword: "",
-        price: 'priceASC',
+        sort: '',
         page: '1',
         size: '12',
     });
@@ -90,7 +90,7 @@ export default function HomePage({ user }) {
                         justifyContent: 'center'
                     }}>
                         {categories.map((category) => (
-                            <Link key={category.id} component={RouterLink} to={`/products/search?category=${category.id}&keyword=&price=priceASC&page=1&size=12`} underline="none">
+                            <Link key={category.id} component={RouterLink} to={`/products/search?category=${category.id}&keyword=&sort=&page=1&size=12`} underline="none">
                                 <Button
                                     sx={{ my: 2, color: 'black', display: 'block' }}
                                 >

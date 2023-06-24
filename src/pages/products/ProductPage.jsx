@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
     Container,
     Box,
@@ -9,7 +9,10 @@ import {
     Chip,
     Button,
     Link,
-    Avatar
+    Avatar,
+    IconButton,
+    MenuItem,
+    Menu
 } from '@mui/material';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -25,27 +28,112 @@ import {
     Group as GroupIcon,
     ArrowForwardIos as ArrowForwardIosIcon
 } from '@mui/icons-material';
+
 import { stringAvatarSquare } from '../../utils/stringAvatar';
+import { UserContext } from '../../utils/UserContext';
 
 export default function ProductPage({ user }) {
+    const { showNotification } = useContext(UserContext);
     const navigate = useNavigate();
     const location = new URL(window.location.href);
     const pathname = location.pathname;
 
     const [product, setProduct] = useState(null);
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            axios.get(`${process.env.REACT_APP_API_URL}${pathname}`)
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleMenuMoreClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuMoreClose = () => {
+        setAnchorEl(null);
+    };
+
+    const fetchProduct = async () => {
+        try {
+            const config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `${process.env.REACT_APP_API_URL}${pathname}`,
+                headers: user ? { 'Authorization': `Bearer ${user.token}` } : undefined
+            };
+
+            await axios.request(config)
                 .then(res => {
+                    // console.log("product", res.data)
                     setProduct(res.data);
-                }).catch(err => {
-                    console.error(err);
-                    navigate("/404");
-                });
+                })
+
+        } catch (err) {
+            console.error(err);
+            navigate("/404");
         }
+    }
+
+    const handleChangeStatusHide = () => {
+        if (user) {
+            try {
+                const config = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: `${process.env.REACT_APP_API_URL}/products/${product.id}?accept=true`,
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                };
+
+                axios.request(config)
+                    .then(res => {
+                        showNotification(res.data, "success");
+                        fetchProduct();
+                    })
+
+            } catch (err) {
+                console.error(err);
+                showNotification(err.response.data, "error");
+            }
+        }
+    }
+
+    const handleChangeStatusVisible = () => {
+        if (user) {
+            try {
+                const config = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: `${process.env.REACT_APP_API_URL}/products/${product.id}?accept=false`,
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                };
+
+                axios.request(config)
+                    .then(res => {
+                        showNotification(res.data, "success");
+                        fetchProduct();
+                    })
+
+            } catch (err) {
+                console.error(err);
+                showNotification(err.response.data, "error");
+            }
+        }
+    }
+
+    useEffect(() => {
         fetchProduct();
-    }, [pathname])
+    }, [pathname, user])
+
+    const handlePayment = () => {
+
+        const config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${process.env.REACT_APP_API_URL}/create-checkout-session?product=${product.id}&user=${user.id}`
+        };
+        axios.request(config)
+            .then(res => {
+                const checkoutUrl = res.data;
+                window.location.href = checkoutUrl;
+            })
+            .catch(err => console.error(err));
+    };
 
     return (
         <Container sx={{
@@ -65,44 +153,84 @@ export default function ProductPage({ user }) {
                         <Box sx={{
                             width: {
                                 xs: "100%",
-                                md: "60%"
-                            }
+                                md: "60%",
+                            },
+                            position: 'relative'
                         }}>
+                            {product.status === "DRAFT" &&
+                                <Box variant='body1' sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    height: 50,
+                                    mx: "auto",
+                                    background: "#e0e0e0",
+                                    width: "100%",
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
+                                    <Typography variant='body1' sx={{ px: 2 }}>Cette article est en brouillon</Typography>
+                                </Box>
+                            }
+                            {product.status === "HIDE" &&
+                                <Box variant='body1' sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    height: 50,
+                                    mx: "auto",
+                                    background: "#eeeeee",
+                                    width: "100%",
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
+                                    <Typography variant='body1' sx={{ px: 2 }}>Cette article est masqué</Typography>
+                                </Box>
+                            }
+                            {product.status === "SOLD" &&
+                                <Box variant='body1' sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    height: 50,
+                                    mx: "auto",
+                                    background: "#4db6ac",
+                                    width: "100%",
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
+                                    <Typography variant='body1' sx={{ px: 2 }}>Cette article à été vendu</Typography>
+                                </Box>
+                            }
                             <Box sx={{
                                 display: {
                                     xs: "block",
                                     md: "none"
                                 }
                             }}>
-                                <Slider
-                                    dots={false}
-                                    infinite={false}
-                                    speed={500}
-                                    slidesToShow={1.1}
-                                    slidesToScroll={1}
-                                >
-                                    <CardMedia
-                                        component="img"
-                                        alt={product.title}
-                                        image="/assets/images/bg-register.jpg"
-                                        sx={{
-                                            aspectRatio: "16/9",
-                                            objectFit: 'cover',
-                                            width: "100%",
-                                        }}
-                                    />
-                                    <CardMedia
-                                        component="img"
-                                        alt={product.title}
-                                        image="/assets/images/bg-register.jpg"
-                                        sx={{
-                                            aspectRatio: "16/9",
-                                            objectFit: 'cover',
-                                            width: "100%",
-                                            ml: 2
-                                        }}
-                                    />
-                                </Slider>
+                                {product?.images &&
+                                    <Slider
+                                        dots={false}
+                                        infinite={false}
+                                        speed={500}
+                                        slidesToShow={1.1}
+                                        slidesToScroll={1}
+                                    >
+                                        {product?.images.map((i) => (
+                                            <CardMedia
+                                                key={i.id}
+                                                component="img"
+                                                loading="lazy"
+                                                alt={i.url}
+                                                image={process.env.REACT_APP_API_URL + "/media/" + i.url}
+                                                sx={{
+                                                    aspectRatio: "16/9",
+                                                    objectFit: 'contain',
+                                                    width: "100%",
+                                                    background: "black",
+                                                    pr: 2
+                                                }}
+                                            />
+                                        ))}
+                                    </Slider>
+                                }
                             </Box>
                             <Box sx={{
                                 display: {
@@ -110,28 +238,26 @@ export default function ProductPage({ user }) {
                                     md: "block"
                                 }
                             }}>
-                                <CardMedia
-                                    component="img"
-                                    alt={product.title}
-                                    image="/assets/images/bg-register.jpg"
-                                    sx={{
-                                        aspectRatio: "16/9",
-                                        objectFit: 'cover',
-                                        width: "100%",
-                                        mb: 2
-                                    }}
-                                />
-                                <CardMedia
-                                    component="img"
-                                    alt={product.title}
-                                    image="/assets/images/bg-register.jpg"
-                                    sx={{
-                                        aspectRatio: "16/9",
-                                        objectFit: 'cover',
-                                        width: "100%",
-                                        mb: 2
-                                    }}
-                                />
+                                {product?.images &&
+                                    <>
+                                        {product?.images.map((i) => (
+                                            <CardMedia
+                                                key={i.id}
+                                                component="img"
+                                                loading="lazy"
+                                                alt={i.url}
+                                                image={process.env.REACT_APP_API_URL + "/media/" + i.url}
+                                                sx={{
+                                                    aspectRatio: "16/9",
+                                                    objectFit: 'contain',
+                                                    width: "100%",
+                                                    mb: 2,
+                                                    background: "black"
+                                                }}
+                                            />
+                                        ))}
+                                    </>
+                                }
                             </Box>
                         </Box>
                         <Box sx={{
@@ -157,45 +283,119 @@ export default function ProductPage({ user }) {
                                     {product.title}
                                 </Typography>
                                 <Typography variant='h6' sx={{ fontWeight: 300 }}>{product.content}</Typography>
-                                <Bookmark product={product} />
-                                <Box sx={{
-                                    my: 1,
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    justifyContent: "start"
-                                }}>
-                                    <Link component={RouterLink} to={`/offers/propose?product=${product.id}`} underline="none" sx={{
+                                {product?.status === "VISIBLE" &&
+                                    <Bookmark product={product} />
+                                }
+                                {product?.status !== "SOLD" &&
+                                    <Box sx={{
                                         my: 1,
-                                        mr: 1
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                        justifyContent: "start"
                                     }}>
-                                        <Button variant="outlined"
-                                            sx={{
-                                                color: "black",
-                                                borderColor: "black",
-                                                '&:hover': {
-                                                    background: "#00000010",
+                                        <Link component={RouterLink} to={`/offers/propose?product=${product.id}`} underline="none" sx={{
+                                            my: 1,
+                                            mr: 1
+                                        }}>
+                                            <Button variant="outlined"
+                                                sx={{
+                                                    color: "black",
                                                     borderColor: "black",
-                                                },
+                                                    '&:hover': {
+                                                        background: "#00000010",
+                                                        borderColor: "black",
+                                                    },
+                                                }}>
+                                                {product.user?.pseudo !== user?.pseudo ?
+                                                    "Faire une offre"
+                                                    :
+                                                    "Voir mes offres"
+                                                }
+                                            </Button>
+                                        </Link>
+                                        {product?.user.pseudo !== user?.pseudo &&
+                                            <Button
+                                                onClick={handlePayment}
+                                                variant="solid"
+                                                sx={{
+                                                    my: 1,
+                                                    mr: 1,
+                                                    color: "white",
+                                                    background: "black",
+                                                    '&:hover': {
+                                                        background: "#00000099",
+                                                    },
+                                                }}>
+                                                Acheter
+                                            </Button>
+                                        }
+                                        {product?.user.pseudo === user?.pseudo &&
+                                            <Box sx={{
+                                                my: 1
                                             }}>
-                                            Faire une offre
-                                        </Button>
-                                    </Link>
-                                    <Link component={RouterLink} to="/login" underline="none" sx={{
-                                        my: 1,
-                                        mr: 1
-                                    }}>
-                                        <Button variant="solid"
-                                            sx={{
-                                                color: "white",
-                                                background: "black",
-                                                '&:hover': {
-                                                    background: "#00000099",
-                                                },
-                                            }}>
-                                            Acheter
-                                        </Button>
-                                    </Link>
-                                </Box>
+                                                <Button
+                                                    id="basic-button"
+                                                    aria-controls={open ? 'menu-more' : undefined}
+                                                    aria-haspopup="true"
+                                                    aria-expanded={open ? 'true' : undefined}
+                                                    onClick={handleMenuMoreClick}
+                                                    sx={{
+                                                        px: 2,
+                                                        color: "white",
+                                                        background: "black",
+                                                        '&:hover': {
+                                                            background: "#00000099",
+                                                        },
+                                                    }}>
+                                                    Parametres
+                                                </Button>
+                                                <Menu
+                                                    anchorOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    keepMounted
+                                                    transformOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    id="menu-more"
+                                                    anchorEl={anchorEl}
+                                                    open={open}
+                                                    onClose={handleMenuMoreClose}
+                                                    MenuListProps={{
+                                                        'aria-labelledby': 'basic-button',
+                                                    }}
+                                                >
+                                                    <MenuItem
+                                                        onClick={() => {
+                                                            handleMenuMoreClose();
+                                                        }}>
+                                                        Modifier
+                                                    </MenuItem>
+                                                    {product.status === "VISIBLE" &&
+                                                        <MenuItem
+                                                            onClick={() => {
+                                                                handleChangeStatusHide();
+                                                                handleMenuMoreClose();
+                                                            }}>
+                                                            Masquer
+                                                        </MenuItem>
+                                                    }
+                                                    {product.status === "HIDE" &&
+                                                        <MenuItem
+                                                            onClick={() => {
+                                                                handleChangeStatusVisible();
+                                                                handleMenuMoreClose();
+                                                            }}>
+                                                            Démasquer
+                                                        </MenuItem>
+                                                    }
+                                                </Menu>
+                                            </Box>
+                                        }
+                                    </Box>
+                                }
                                 <Divider sx={{
                                     my: 1
                                 }} />
@@ -215,7 +415,20 @@ export default function ProductPage({ user }) {
                                     my: 1
                                 }} />
                                 <Typography variant='h6' sx={{ fontWeight: 300 }}>Prix</Typography>
-                                <Typography variant='body1' sx={{ fontWeight: "bold" }}>{fCurrency(product.price)}</Typography>
+                                {product.priceOffer !== null ?
+                                    <Box sx={{
+                                        display: "flex"
+                                    }}>
+                                        <Typography variant='h6' sx={{ fontWeight: "bold", mr: 2 }}>{fCurrency(product.priceOffer)}</Typography>
+                                        <Typography variant='h6'>
+                                            <strike>
+                                                {fCurrency(product.price)}
+                                            </strike>
+                                        </Typography>
+                                    </Box>
+                                    :
+                                    <Typography variant='h6' sx={{ fontWeight: "bold" }}>{fCurrency(product.price)}</Typography>
+                                }
                                 <Divider sx={{
                                     my: 1
                                 }} />

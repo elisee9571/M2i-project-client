@@ -23,7 +23,7 @@ export default function Page404() {
             <Container>
                 <StyledContent sx={{ textAlign: 'center', alignItems: 'center' }}>
                     <Typography variant="h4" paragraph>
-                        Désolé, page introuvable!
+                        Désolé, page introuvable !
                     </Typography>
 
                     <Typography sx={{ color: 'text.secondary', }}>
@@ -37,7 +37,7 @@ export default function Page404() {
                     />
 
                     <Button to="/" size="large" variant="contained" component={RouterLink}>
-                        Go to Home
+                        Aller à la page d'accueil
                     </Button>
                 </StyledContent>
             </Container>
