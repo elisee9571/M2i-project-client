@@ -54,8 +54,8 @@ export default function HomePage({ user }) {
             alignItems: "center",
         }}>
             <Box sx={{
-                backgroundImage: "url('/assets/images/bg-register.jpg')",
-                backgroundPosition: "center",
+                backgroundImage: "url('/assets/images/hero.jpg')",
+                backgroundPosition: "top",
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 width: "100%",
@@ -115,13 +115,13 @@ export default function HomePage({ user }) {
                         md: 5
                     }
                 }}>
-                    <Typography variant='h5' color={"white"}>
+                    <Typography variant='h5' color={"white"} sx={{ textShadow: "#000 0 0 15px" }}>
                         Un espace dédié à l'expression artistique et à la découverte
                     </Typography>
-                    <Typography variant='h4' color={"white"}>
+                    <Typography variant='h4' color={"white"} sx={{ textShadow: "#000 0 0 15px" }}>
                         Explorez, achetez et soutenez des créateurs indépendants sans intermédiaire
                     </Typography>
-                    <Typography variant='h6' color={"white"}>
+                    <Typography variant='h6' color={"white"} sx={{ textShadow: "#000 0 0 15px" }}>
                         Découvrez et d'achetez une variété de créations uniques,
                         allant des œuvres d'art aux produits faits main, en passant par des produits
                         numériques et bien d'autres.
