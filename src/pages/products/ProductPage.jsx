@@ -125,7 +125,8 @@ export default function ProductPage({ user }) {
         const config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: `${process.env.REACT_APP_API_URL}/create-checkout-session?product=${product.id}&user=${user.id}`
+            url: `${process.env.REACT_APP_API_URL}/create-checkout-session?product=${product.id}&user=${user.id}`,
+            headers: user ? { 'Authorization': `Bearer ${user.token}` } : undefined
         };
         axios.request(config)
             .then(res => {

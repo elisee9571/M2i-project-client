@@ -78,6 +78,21 @@ export default function CardOffer({ offer, user }) {
         }
     }
 
+    const handlePayment = () => {
+        const config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${process.env.REACT_APP_API_URL}/create-checkout-session?product=${offer.product.id}&user=${user.id}`,
+            headers: user ? { 'Authorization': `Bearer ${user.token}` } : undefined
+        };
+        axios.request(config)
+            .then(res => {
+                const checkoutUrl = res.data;
+                window.location.href = checkoutUrl;
+            })
+            .catch(err => console.error(err));
+    };
+
     return (
         <>
             {offer ? (
@@ -174,7 +189,9 @@ export default function CardOffer({ offer, user }) {
                             <>
                                 {offer.status === "REJECTED" || offer.status === "PENDING" && null}
                                 {offer.status === "ACCEPTED" &&
-                                    <Button variant="solid"
+                                    <Button
+                                        onClick={handlePayment}
+                                        variant="solid"
                                         sx={{
                                             color: "white",
                                             background: "black",
