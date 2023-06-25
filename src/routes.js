@@ -70,7 +70,7 @@ export default function Router() {
                 {
                     path: "profile",
                     children: [
-                        { path: ':pseudo', element: <RequiredAuth children={<ProfilePage user={user} />} /> },
+                        { path: ':pseudo', element: <ProfilePage user={user} /> },
                         { path: 'settings', element: <RequiredAuth children={<ProfileSettingsPage user={user} />} /> },
                     ]
                 },

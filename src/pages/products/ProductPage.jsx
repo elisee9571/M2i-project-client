@@ -373,12 +373,16 @@ export default function ProductPage({ user }) {
                                                         'aria-labelledby': 'basic-button',
                                                     }}
                                                 >
-                                                    <MenuItem
+                                                    <Link component={RouterLink}
+                                                        to={`/products/add?product=${product.id}`}
+                                                        underline="none"
                                                         onClick={() => {
                                                             handleMenuMoreClose();
                                                         }}>
-                                                        Modifier
-                                                    </MenuItem>
+                                                        <MenuItem>
+                                                            Modifier
+                                                        </MenuItem>
+                                                    </Link>
                                                     {product.status === "VISIBLE" &&
                                                         <MenuItem
                                                             onClick={() => {

@@ -69,7 +69,7 @@ export default function RegisterPage() {
                 <Box
                     sx={{
                         flex: '1',
-                        backgroundImage: 'url("/assets/images/bg-register.jpg")',
+                        backgroundImage: 'url("/assets/images/img-register.jpg")',
                         backgroundSize: 'cover',
                         display: { xs: 'none', md: 'block' }
                     }}
@@ -80,7 +80,7 @@ export default function RegisterPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        p: 5
+                        p: 1
                     }}
                     component="form"
                     action="POST"
@@ -90,21 +90,12 @@ export default function RegisterPage() {
                         <Typography variant="h3" align="center" sx={{ mb: 3 }}>Inscription</Typography>
                         <Box sx={{
                             display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gridGap: "1rem"
+                            gridGap: "1rem",
+                            gridTemplateColumns: {
+                                xs: "1fr",
+                                md: "1fr 1fr",
+                            },
                         }}>
-                            <TextField
-                                id="firstname"
-                                label="Prénom*"
-                                type='text'
-                                fullWidth
-                                {...register("firstname", { required: true })}
-                                helperText={errors.firstname && "Prénom requis."}
-                                error={Boolean(errors.firstname)}
-                                sx={{
-                                    pb: 2
-                                }}
-                            />
                             <TextField
                                 id="lastname"
                                 label="Nom*"
@@ -114,7 +105,25 @@ export default function RegisterPage() {
                                 helperText={errors.lastname && "Nom requis."}
                                 error={Boolean(errors.lastname)}
                                 sx={{
-                                    pb: 2
+                                    pb: {
+                                        xs: 0,
+                                        md: 2
+                                    }
+                                }}
+                            />
+                            <TextField
+                                id="firstname"
+                                label="Prénom*"
+                                type='text'
+                                fullWidth
+                                {...register("firstname", { required: true })}
+                                helperText={errors.firstname && "Prénom requis."}
+                                error={Boolean(errors.firstname)}
+                                sx={{
+                                    pb: {
+                                        xs: 2,
+                                        md: 2
+                                    }
                                 }}
                             />
                         </Box>

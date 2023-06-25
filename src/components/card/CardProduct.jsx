@@ -205,7 +205,7 @@ export default function cardProduct({ product }) {
                             <Typography variant='body1' sx={{ px: 2 }}>Masqué</Typography>
                         </Box>
                     }
-                    {product.status === "SOLD" &&
+                    {product.status === "SOLD" || product.status === "PENDING" &&
                         <Box variant='body1' sx={{
                             position: 'absolute',
                             bottom: 0,

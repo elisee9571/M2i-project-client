@@ -80,7 +80,7 @@ export default function LoginPage() {
                 <Box
                     sx={{
                         flex: '1',
-                        backgroundImage: 'url("/assets/images/bg-login.jpg")',
+                        backgroundImage: 'url("/assets/images/img-login.jpg")',
                         backgroundSize: 'cover',
                         display: { xs: 'none', md: 'block' }
                     }}
@@ -91,7 +91,7 @@ export default function LoginPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        p: 5
+                        p: 1
                     }}
                     component="form"
                     action="POST"

@@ -24,17 +24,19 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         try {
             const storedUser = localStorage.getItem('USER');
-            const tokenDecode = jwt_decode(JSON.parse(storedUser).token)
 
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
             }
 
-            // Deconnexion forcé token expiré
-            if (Date.now() > tokenDecode.exp * 1000) {
-                setUser(null);
-                localStorage.removeItem('USER');
-                showNotification("Votre session a expiré, veuillez vous reconnecter.", "error");
+            if (JSON.parse(storedUser)?.token) {
+                const tokenDecode = jwt_decode(JSON.parse(storedUser).token)
+                // Deconnexion forcé token expiré
+                if (Date.now() > tokenDecode.exp * 1000) {
+                    setUser(null);
+                    localStorage.removeItem('USER');
+                    showNotification("Votre session a expiré, veuillez vous reconnecter.", "error");
+                }
             }
 
         } catch (err) {

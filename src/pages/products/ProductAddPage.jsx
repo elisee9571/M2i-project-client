@@ -164,8 +164,11 @@ function Previews({ patchProduct, errors, setProduct, product }) {
 export default function ProductAddPage({ user }) {
     const { showNotification } = useContext(UserContext);
     const { data: dataCategory } = useFetchCategories();
-    const navigate = useNavigate();
 
+    const location = new URL(window.location.href);
+    const searchParams = new URLSearchParams(location.search);
+
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     // const [files, setFiles] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -180,8 +183,31 @@ export default function ProductAddPage({ user }) {
                 console.error(error);
             }
         };
+        if (searchParams.get("product")) {
+            const fetchProduct = async () => {
+                try {
+                    const config = {
+                        method: 'get',
+                        maxBodyLength: Infinity,
+                        url: `${process.env.REACT_APP_API_URL}/products/${searchParams.get('product')}`
+                    };
+
+                    await axios.request(config)
+                        .then(res => {
+                            // console.log("product", res.data)
+                            setProduct(res.data);
+                        })
+
+                } catch (err) {
+                    console.error(err);
+                    navigate("/404");
+                }
+            }
+
+            fetchProduct();
+        }
         fetchCategories();
-    }, [dataCategory])
+    }, [dataCategory, searchParams.get('product')])
 
     const onSubmitPatchProduct = async (data, e) => {
         e.preventDefault();
@@ -197,12 +223,36 @@ export default function ProductAddPage({ user }) {
         dataForm.append('price', product.price);
         dataForm.append('category', product.category);
 
-        if (user) {
+        if (!searchParams.get("product")) {
+            if (user) {
+                try {
+                    const config = {
+                        method: 'post',
+                        maxBodyLength: Infinity,
+                        url: `${process.env.REACT_APP_API_URL}/products`,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${user.token}`
+                        },
+                        data: dataForm
+                    };
+
+                    const res = await axios.request(config);
+
+                    showNotification(res.data, "success");
+                    reset();
+                    navigate(`/profile/${user.pseudo}`);
+                } catch (err) {
+                    console.error(err);
+                    showNotification(err.response.data, "error");
+                }
+            }
+        } else {
             try {
                 const config = {
-                    method: 'post',
+                    method: 'patch',
                     maxBodyLength: Infinity,
-                    url: `${process.env.REACT_APP_API_URL}/products`,
+                    url: `${process.env.REACT_APP_API_URL}/products/${product.id}`,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${user.token}`
@@ -221,6 +271,7 @@ export default function ProductAddPage({ user }) {
             }
         }
     }
+
 
     const onSubmitPatchProductStatusDraft = async (data, e) => {
         e.preventDefault();
@@ -313,7 +364,7 @@ export default function ProductAddPage({ user }) {
                                 background: "#00000099",
                             },
                         }}>
-                        Ajouter
+                        {searchParams.get("product") ? "Modifier" : "Ajouter"}
                     </Button>
                 </Box>
                 <Grid container spacing={2} rowSpacing={2} sx={{ mt: 3 }}>
@@ -410,7 +461,7 @@ export default function ProductAddPage({ user }) {
                                     <Select
                                         labelId='select-label-category'
                                         id="select-category"
-                                        value={product?.category}
+                                        value={product?.category.id}
                                         label="Catégorie"
                                         {...patchProduct("category", {
                                             required: true,
@@ -569,7 +620,7 @@ export default function ProductAddPage({ user }) {
                                     background: "#00000099",
                                 },
                             }}>
-                            Ajouter
+                            {searchParams.get("product") ? "Modifier" : "Ajouter"}
                         </Button>
                     </Grid>
                 </Grid>

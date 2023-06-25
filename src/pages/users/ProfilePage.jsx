@@ -61,7 +61,7 @@ export default function ProfilePage({ user }) {
                     headers: user ? { 'Authorization': `Bearer ${user.token}` } : undefined
                 })
                     .then(res => {
-                        // console.log("products", res.data)
+                        console.log("products", res.data)
                         setProducts(res.data.products);
                         setTotalPages(res.data.totalPages);
                         setTotalProducts(res.data.totalProducts);
