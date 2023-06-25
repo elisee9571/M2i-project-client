@@ -8,10 +8,10 @@ import {
     AppBar,
     Toolbar,
 } from "@mui/material";
+import { useEffect, useState } from 'react';
+import useFetchCategories from '../hooks/category/useFetchCategories';
 import useProductsHome from "../hooks/product/useProductsHome";
 import CardProduct from "../components/card/CardProduct";
-import useFetchCategories from '../hooks/category/useFetchCategories';
-import { useEffect, useState } from 'react';
 
 export default function HomePage({ user }) {
     const { data } = useProductsHome();
