@@ -328,7 +328,7 @@ export default function Navbar({ user }) {
                 mx: 2
             }}>
                 {categories.map((category) => (
-                    <Link key={category.id} component={RouterLink} to={`/products?category=${category.id}&keyword=&sort=&page=1&size=9`} underline="none">
+                    <Link key={category.id} component={RouterLink} to={`/products/search?category=${category.id}&keyword=&sort=&page=1&size=12`} underline="none">
                         <ListItem disablePadding>
                             <ListItemButton onClick={toggleDrawer(anchor, false)}>
                                 <ListItemIcon>{icon({ category })}</ListItemIcon>
