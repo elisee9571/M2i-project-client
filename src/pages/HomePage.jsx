@@ -34,7 +34,6 @@ export default function HomePage({ user }) {
                 console.error(error)
             }
         };
-
         fetchCategories();
     }, [dataCategory])
 
